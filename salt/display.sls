@@ -10,6 +10,12 @@ i3:
   require:
     - pkg: xorg
 
+rxvt-unicode:
+  pkg:
+    - installed
+  require:
+    - pkg: i3
+
 /home/{{ user }}/.xinitrc:
   file.managed:
     - source: salt://display/xinitrc

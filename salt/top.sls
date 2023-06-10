@@ -5,7 +5,9 @@ base:
     - display
     - comfort
     - vscode
-    - docker
     - tools/go
+    - tools/nvm
     {# gui-docker needs to be explicit for now #}
     {# - gui-docker #}
+
+    {# note: docker and gui-docker are explicit #}

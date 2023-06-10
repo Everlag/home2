@@ -4,6 +4,8 @@ include:
 kale:
   user.present:
     - home: /home/kale
+    - usergroup: True
+    - shell: /bin/bash
 
 sudo:
   pkg:

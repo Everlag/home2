@@ -54,6 +54,16 @@
     - mode: 644
     - makedirs: True
 
+/home/{{ user }}/load_x_preferences.sh:
+  file.managed:
+    - contents: |
+        xrdb /home/{{ user }}/.Xresources
+    - user: {{ user }}
+    - group: {{ user }}
+    - mode: 744
+    - makedirs: True
+
+
 /home/{{ user }}/.fonts/mononoki-Regular.ttf:
   file.managed:
     - source: salt://comfort/mononoki-Regular.ttf
