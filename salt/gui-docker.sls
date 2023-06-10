@@ -4,9 +4,8 @@
 {% set x11docker_tmp = '/tmp/x11docker_tmp.zip' %}
 {% set x11docker_dir = '/tmp/x11docker_tmp' %}
 
-p7zip-full:
-  pkg:
-    - installed
+include:
+  - common
 
 {{ x11docker_dir }}:
   cmd.run:

@@ -1,3 +1,6 @@
+include:
+  - common
+
 kale:
   user.present:
     - home: /home/kale
@@ -10,8 +13,9 @@ sudo:
     - addusers:
       - kale
 
-docker:
+docker-group:
   group.present:
+    - name: docker
     - system: True
     - addusers:
       - kale
@@ -21,10 +25,6 @@ nano:
     - installed
 
 git:
-  pkg:
-    - installed
-
-p7zip-full:
   pkg:
     - installed
 

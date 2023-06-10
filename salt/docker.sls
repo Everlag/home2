@@ -4,6 +4,9 @@
 # Related issue in salt: https://github.com/saltstack/salt/issues/60605
 {%- set on_docker = salt['grains.get']('virtual_subtype', '') in ('Docker',) %}
 
+include:
+  - common
+
 docker-prereqs:
   pkg.installed:
     - pkgs:
@@ -45,11 +48,6 @@ docker:
       - cmd: docker-repo-workaround
       - cmd: /sys/fs/cgroup/systemd
     - aggregate: False
-
-curl:
-  pkg.installed:
-    - names:
-      - curl
 
 {% set sysbox_url = 'https://downloads.nestybox.com/sysbox/releases/v0.6.1/sysbox-ce_0.6.1-0.linux_amd64.deb' %}
 {% set sysbox_hash = 'd57dc297c60902d4f7316e4f641af00a2a9424e24dde88bb2bb7d3bc419b0f04' %}

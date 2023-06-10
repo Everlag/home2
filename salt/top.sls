@@ -2,7 +2,10 @@ base:
   '*':
     - baseline
     - users
-    - docker
     - display
     - comfort
-    - gui-docker
+    - vscode
+    - docker
+    - tools/go
+    {# gui-docker needs to be explicit for now #}
+    {# - gui-docker #}

@@ -3,6 +3,8 @@ Xft.dpi: 95
 
 URxvt.font: xft:mononoki:bold:size=12
 
+URxvt.perl-ext-common:-confirm-paste
+
 ! colors sourced from
 ! http://www.rosipov.com/blog/mintty-color-scheme-cygwin/
 
@@ -11,7 +13,7 @@ URxvt.background: #000000
 
 ! black
 URxvt.color0: #073642
-URxvt.color8: #002b36
+URxvt.color8: #30aaaa
 
 ! red
 URxvt.color1: #dc322f

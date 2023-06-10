@@ -34,13 +34,17 @@
     - mode: 644
     - makedirs: True
 
-/home/{{ user }}/.i3/config:
+/home/{{ user }}/.config/i3/config:
   file.managed:
     - source: salt://comfort/i3-config
     - user: {{ user }}
     - group: {{ user }}
     - mode: 644
     - makedirs: True
+  cmd.run:
+    - name: |
+        i3-msg reload
+        i3-msg restart
 
 /home/{{ user }}/.Xresources:
   file.managed:
@@ -80,6 +84,14 @@
   file.managed:
     - source:
       - salt://comfort/inputrc
+    - user: {{ user }}
+    - group: {{ user }}
+    - mode: 644
+
+/home/{{ user }}/.gitconfig:
+  file.managed:
+    - source:
+      - salt://comfort/gitconfig
     - user: {{ user }}
     - group: {{ user }}
     - mode: 644
