@@ -44,15 +44,14 @@ sudo salt-call --local state.apply baseline
 # Highstate all configuration
 sudo salt-call --local state.apply
 
-# docker fun flakiness, requires manual execution and retries
-sudo salt-call --local state.apply.apply docker
-sudo salt-call --local state.apply.apply docker
-sudo salt-call --local state.apply.apply docker
-
-sudo salt-call --local state.apply.apply gui-docker
-
 ./install_extensions.sh # created by vscode state
 ./load_x_preferences.sh # created by comfort state
+```
+
+For docker support
+```bash
+# docker fun flakiness, requires manual execution and maybe multiple retries
+sudo salt-call --local --id=docker-host state.apply.apply docker
 ```
 
 Then reboot and get into a graphical env using

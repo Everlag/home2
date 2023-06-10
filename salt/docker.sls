@@ -20,9 +20,9 @@ docker-prereqs:
 docker-repo-workaround:
   cmd.run:
     - name: |
-        curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-        echo "deb [arch={{ grains['osarch'] }} signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
-    - unless: docker --version || true # don't try to do this twice
+        curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --yes --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+        echo "deb [arch={{ grains['osarch'] }} signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
+    {# - unless: docker --version # don't try to do this twice #}
     - require:
       - docker-prereqs
 
@@ -49,9 +49,20 @@ docker:
       - cmd: /sys/fs/cgroup/systemd
     - aggregate: False
 
+verify_docker:
+    cmd.run:
+    - name: docker run hello-world
+    - require:
+      - pkg: docker
+
 {% set sysbox_url = 'https://downloads.nestybox.com/sysbox/releases/v0.6.1/sysbox-ce_0.6.1-0.linux_amd64.deb' %}
 {% set sysbox_hash = 'd57dc297c60902d4f7316e4f641af00a2a9424e24dde88bb2bb7d3bc419b0f04' %}
 {% set sysbox_tmp = '/tmp/sysbox_tmp.deb' %}
+
+sysbox-prereqs:
+  pkg.installed:
+    - pkgs:
+      - jq
 
 fetch_package_sysbox:
   cmd.run:
@@ -60,6 +71,7 @@ fetch_package_sysbox:
     - require:
       - pkg: curl
       - pkg: docker
+      - pkg: sysbox-prereqs
 
 verify_checksum_sysbox:
   cmd.run:
