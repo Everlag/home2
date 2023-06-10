@@ -1,15 +1,15 @@
 base:
-  '*':
+  'setup':
     - baseline
     - users
-    - display
-    - comfort
-    - vscode
+    - display/display
+    - comfort/comfort
+    - vscode/vscode
     - tools/go
     - tools/nvm
 
   'docker*':
-    - docker
+    - docker/docker
     {# Explicit for now #}
     {# - gui-docker #}
 

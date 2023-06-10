@@ -35,20 +35,25 @@ sudo systemctl status salt-minion
 
 ### salt
 
-Prior to this working, get the contents of the salt directory to `/srv/salt`, probably with a symlink
+Prior to this working, get the contents of the salt directory to `/srv/salt`, probably with a symlink.
+
+**Confirm /srv/salt has this README.md within before proceeding**
+
+Note: we use the minion id in a hacky manner
 
 ```bash
 # apply critical dependency including minion config
-sudo salt-call --local state.apply baseline
+sudo salt-call --local --id=setup state.apply baseline
 
 # Highstate all configuration
-sudo salt-call --local state.apply
+sudo salt-call --local --id=setup state.apply
 
 ./install_extensions.sh # created by vscode state
 ./load_x_preferences.sh # created by comfort state
 ```
 
 For docker support
+
 ```bash
 # docker fun flakiness, requires manual execution and maybe multiple retries
 sudo salt-call --local --id=docker-host state.apply.apply docker
