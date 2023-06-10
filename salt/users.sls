@@ -10,7 +10,6 @@ sudo:
     - addusers:
       - kale
 
-
 docker:
   group.present:
     - system: True
