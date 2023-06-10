@@ -24,13 +24,9 @@ git:
   pkg:
     - installed
 
-/home/kale/.inputrc:
-  file.managed:
-    - source:
-      - salt://inputrc
-    - user: kale
-    - group: kale
-    - mode: 644
+p7zip-full:
+  pkg:
+    - installed
 
 /home/kale/root.sh:
   file.managed:
