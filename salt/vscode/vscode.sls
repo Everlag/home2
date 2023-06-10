@@ -1,8 +1,8 @@
-{% set user = "kale" %}
-
 {% set vscode_url = 'https://az764295.vo.msecnd.net/stable/b380da4ef1ee00e224a15c1d4d9793e27c2b6302/code_1.79.0-1686149120_amd64.deb' %}
 {% set vscode_hash = 'c629e3cd1bed03ccba0ad43dc6bf995b0e4f053f9553b165161dab9cb68a9990' %}
 {% set vscode_tmp = '/tmp/vscode_tmp.deb' %}
+
+{% from "maps/user.jinja" import user with context %}
 
 include:
   - common

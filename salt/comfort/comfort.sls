@@ -1,4 +1,4 @@
-{% set user = "kale" %}
+{% from "maps/user.jinja" import user with context %}
 
 /home/{{ user }}/.bash_profile:
   file.managed:

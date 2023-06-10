@@ -1,4 +1,4 @@
-{% set user = "kale" %}
+{% from "maps/user.jinja" import user with context %}
 
 xorg:
   pkg:

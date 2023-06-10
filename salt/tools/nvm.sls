@@ -2,7 +2,7 @@
 {% set nvm_hash = '2ed5e94ba12434370f0358800deb69f514e8bce90f13beb0e1b241d42c6abafd' %}
 {% set nvm_tmp = '/tmp/nvm_tmp.sh' %}
 
-{% set user = "kale" %}
+{% from "maps/user.jinja" import user with context %}
 
 include:
   - common
