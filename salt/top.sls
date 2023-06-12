@@ -10,6 +10,12 @@ base:
 
   'docker*':
     - docker/docker
+
+
+  'torrent-vm-host*':
+    - vm/torrent_host
+  'torrent-vm-guest*':
+    - tools/mullvad
     {# Explicit for now #}
     {# - gui-docker #}
 

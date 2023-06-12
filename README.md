@@ -64,3 +64,11 @@ Then reboot and get into a graphical env using
 ```bash
 startx
 ```
+
+# Initializing a VM base template
+
+Proxmox base templates are easy to initialize; this generates an image that has salt-minion installed and the `baseline` state having been run.
+
+1. boot up a debian image(11 is a known good version) as a fresh VM
+1. run `vm/initialize_base_image.sh` within the fresh VM
+1. shutdown and create template
