@@ -15,8 +15,8 @@ base:
   'torrent-vm-host*':
     - vm/torrent_host
   'torrent-vm-guest*':
+    - tools/qbittorrent
+    {# NOTE: mullvad ALWAYS comes last as it will prevent further network calls until user manually authenticates #}
     - tools/mullvad
-    {# Explicit for now #}
-    {# - gui-docker #}
 
-    {# note: docker and gui-docker are explicit #}
+    {# note: gui-docker has to be explicit as its flaky and doesn't really have a use yet #}
