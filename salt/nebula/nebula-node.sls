@@ -1,5 +1,7 @@
-{% set nebula_host = salt['grains.get']('nebula_hostname') %}
+{% from "maps/nebula.jinja" import nebula_hosts with context %}
 
+{% set nebula_host = salt['grains.get']('nebula_hostname') %}
+{% set nebula_info = nebula_hosts | selectattr('name', 'equalto', nebula_host) | first %}
 
 {% set nebula_private = "/etc/nebula-main" %}
 {% set nebula_cfg = nebula_private + "/config.yml" %}
@@ -52,7 +54,6 @@ nebula_cert_pack_extract:
     - name: |
         cd {{ nebula_private }}
         7z x {{ nebula_cert_pack }}
-        chmod  *
     - unless: test -f {{ nebula_private }}/{{ nebula_host }}.crt && test -f  {{ nebula_private }}/{{ nebula_host }}.key
     - require:
       - cmd: nebula_cert_pack_exists
@@ -82,7 +83,7 @@ nebula_cert_validate:
 
 {{ nebula_cfg }}:
   file.managed:
-{% if 'nebula-lighthouse' in salt['grains.get']('role') %}
+{% if nebula_info['lighthouse'] %}
     - source: salt://nebula/config.lighthouse.yml
 {% else %}
     - source: salt://nebula/config.node.yml
@@ -124,6 +125,7 @@ validate_nebula_cfg:
     - context:
       nebula_service_account: {{ nebula_service_account }}
       nebula_private: {{ nebula_private }}
+      nebula_host: {{ nebula_host }}
     # VERY important, this is the last thing we do as this can cause us to
     {# lose networking to nebula nodes temporarily #}
     - order: last

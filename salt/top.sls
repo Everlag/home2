@@ -21,7 +21,7 @@ base:
     - match: grain
     - docker/docker
 
-  {# valid roles: nebula-ca nebula-node nebula-lighthouse #}
+  {# includes lighthouses #}
   'roles:nebula-node':
     - match: grain
     - common

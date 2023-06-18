@@ -1,5 +1,5 @@
 [Unit]
-Description=Nebula networking
+Description=Nebula networking ({{ nebula_host }})
 After=network-online.target
 Wants=network-online.target
 

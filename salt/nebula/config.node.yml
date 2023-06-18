@@ -1,10 +1,6 @@
-#
-
-{% set scopes = {} %}
-
 {% from "maps/nebula.jinja" import nebula_hosts with context %}
 {% set nebula_host = salt['grains.get']('nebula_hostname') %}
-{% set nebula_info = nebula_hosts[nebula_host] %}
+{% set nebula_info = nebula_hosts | selectattr('name', 'equalto', nebula_host) | first %}
 
 # {% for space, set in salt['mine.get']('lighthouse*', 'ip_list,nebula_groups,nebula_ips') | dictsort() %}
 #     {% set _ = scopes.update({space: set}) %}
