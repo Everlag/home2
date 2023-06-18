@@ -1,0 +1,14 @@
+[Unit]
+Description=Nebula networking
+After=network-online.target
+Wants=network-online.target
+
+# TODO: figure out how to go back to 'bootstrap settings' on bad salt state...
+[Service]
+ExecStart=/usr/bin/nebula -config /etc/nebula-main/config.yml
+ExecStartPre=/usr/bin/nebula --test -config /etc/nebula-main/config.yml
+ExecReload=/bin/kill -s HUP $MAINPID
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

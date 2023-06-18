@@ -8,6 +8,7 @@ grains:
 {%- for item in salt_roles %}
     - {{ item }}
 {%- endfor %} 
+  nebula_hostname: {{ nebula_hostname }}
 ##### Primary configuration settings #####
 ##########################################
 # This configuration file is used to manage the behavior of the Salt Minion.

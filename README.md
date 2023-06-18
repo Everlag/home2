@@ -49,7 +49,7 @@ Check the `top.sls` file to see what roles a given server should have.
 #
 # NOTE: the SALT_ROLES here controls what states will be applied
 # and how that state will be rendered(ie, for nebula config if applicable)
-sudo salt-call --local --id=initial-setup state.apply baseline pillar='{"SALT_ROLES": "role1 role2 role3"}
+sudo salt-call --local --id=initial-setup state.apply baseline pillar='{"SALT_ROLES": "role1 role2 role3", "NEBULA_HOSTNAME": "$NEBULA_HOSTNAME"}
 ```
 
 ```bash

@@ -1,11 +1,14 @@
 base:
-  {# We seed the minion config ONCE, since it requires a specific cli call providing the pillar #}
+  {#
+    We seed the minion config ONCE, since it requires a specific cli call providing the pillar
+    Hence, we cheat and override the minion ID to ensure this is run only on-demand
+  #}
   "initial-setup":
     - baseline
 
-  '*':
+  {# '*':
     - users
-    - comfort/comfort
+    - comfort/comfort #}
 
   "roles:dev":
     - match: grain
@@ -19,13 +22,15 @@ base:
     - docker/docker
 
   {# valid roles: nebula-ca nebula-node nebula-lighthouse #}
-  'roles:nebula':
+  'roles:nebula-node':
     - match: grain
-    - nebula/nebula
+    - nebula/nebula_bin
+    - nebula/nebula-node
 
    {# nebula-ca is allowed to sign new certificates #}
   'roles:nebula-ca':
     - match: grain
+    - nebula/nebula_bin
     - nebula/nebula-ca
 
 

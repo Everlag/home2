@@ -1,0 +1,20 @@
+{% set nebula_ca = {
+    "name": "laggy"
+} %}
+
+{% set nebula_hosts = ([
+    {
+        "name": "vms",
+        "ip": '192.168.100.1/24',
+        "groups": ["vm-host"],
+        "lighthouse": false,
+    },
+    {
+        "name": "lighthouse-do",
+        "ip": '192.168.100.255/24',
+        "groups": [],
+        "lighthouse": true,
+        "external_ip_port": "192.168.1.10:4242",
+    },
+]) %}
+
