@@ -13,9 +13,9 @@
 # PKI defines the location of credentials for this node. Each of these can also be inlined by using the yaml ": |" syntax.
 pki:
   # The CAs that are accepted by this node. Must contain one or more certificates created by 'nebula-cert ca'
-  ca: /srv/nebula/ca.crt
-  cert: /srv/nebula/nebula.crt
-  key: /srv/nebula/nebula.key
+  ca: {{ nebula_private }}/ca.crt
+  cert: {{ nebula_private }}/{{ nebula_host }}.crt
+  key: {{ nebula_private }}/{{ nebula_host }}.key
 
 # Render out all the lighthouses to be reachable
 static_host_map:

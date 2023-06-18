@@ -24,12 +24,14 @@ base:
   {# valid roles: nebula-ca nebula-node nebula-lighthouse #}
   'roles:nebula-node':
     - match: grain
+    - common
     - nebula/nebula_bin
     - nebula/nebula-node
 
    {# nebula-ca is allowed to sign new certificates #}
   'roles:nebula-ca':
     - match: grain
+    - common
     - nebula/nebula_bin
     - nebula/nebula-ca
 
