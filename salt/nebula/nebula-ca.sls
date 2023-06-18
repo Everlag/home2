@@ -17,6 +17,15 @@ nebula_ca:
           nebula-cert ca -name "{{ nebula_ca['name'] }}" -duration 190800h
       - unless: test -f {{ nebula_ca_location }}/ca.crt && test -f {{ nebula_ca_location }}/ca.key # don't overwrite existing
 
+{# Ensure our configured cert matches at least our network name #}
+verify_nebula_ca:
+    cmd.run:
+      - name: |
+          nebula-cert print -json -path {{ nebula_ca_location }}/ca.crt | grep -q {{ nebula_ca['name'] }} || echo 'err="ca cert unexpected name"'
+      - stateful: True
+      - require:
+          - cmd: nebula_ca
+
 {{ nebula_keys_location }}:
   file.directory:
     - user: root
@@ -24,8 +33,9 @@ nebula_ca:
     - mode: 600
     - makedirs: True
     - require:
-        - cmd: nebula_ca
+        - cmd: verify_nebula_ca
 
+{# Now sign everything; we don't sign if those already exist #}
 {% for host in nebula_hosts %}
 sign_{{ host['name'] }}:
   cmd.run:
@@ -34,9 +44,10 @@ sign_{{ host['name'] }}:
         nebula-cert sign -name "{{ host['name'] }}" -ip {{ host['ip'] }} -duration 8760h -ca-crt {{ nebula_ca_location }}/ca.crt -ca-key {{ nebula_ca_location }}/ca.key -groups "{{ host['groups']|join(',') }}"
     - unless: test -f {{ nebula_keys_location }}/{{host['name']}}.crt && test -f {{ nebula_keys_location }}/{{host['name']}}.key # don't overwrite existing
     - require:
-        - cmd: nebula_ca
+        - cmd: verify_nebula_ca
         - file: {{ nebula_keys_location }}
 
+{# Verify the certs we have are consistent and in good standing #}
 verify_signed_{{ host['name'] }}:
   cmd.run:
     - name: |
