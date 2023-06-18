@@ -41,13 +41,24 @@ Prior to this working, get the contents of the salt directory to `/srv/salt`, pr
 
 Note: we use the minion id in a hacky manner
 
+First, initialize our salt minion file with the desired roles.
+Check the `top.sls` file to see what roles a given server should have.
+
 ```bash
 # apply critical dependency including minion config
-sudo salt-call --local --id=setup state.apply baseline
+#
+# NOTE: the SALT_ROLES here controls what states will be applied
+# and how that state will be rendered(ie, for nebula config if applicable)
+sudo salt-call --local --id=initial-setup state.apply baseline pillar='{"SALT_ROLES": "role1 role2 role3"}
+```
+
+```bash
 
 # Highstate all configuration
-sudo salt-call --local --id=setup state.apply
 
+sudo salt-call --local state.apply
+
+# Present depending on enabled roles.
 ./install_extensions.sh # created by vscode state
 ./load_x_preferences.sh # created by comfort state
 ```
@@ -56,7 +67,7 @@ For docker support
 
 ```bash
 # docker fun flakiness, requires manual execution and maybe multiple retries
-sudo salt-call --local --id=docker-host state.apply.apply docker
+sudo salt-call --local state.apply.apply docker
 ```
 
 Then reboot and get into a graphical env using
@@ -72,3 +83,7 @@ Proxmox base templates are easy to initialize; this generates an image that has 
 1. boot up a debian image(11 is a known good version) as a fresh VM
 1. run `vm/initialize_base_image.sh` within the fresh VM
 1. shutdown and create template
+
+```
+
+```

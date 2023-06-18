@@ -3,6 +3,11 @@ file_roots:
     - /srv/salt
     - /srv/formulas/docker-formula
 
+grains:
+  roles:
+{%- for item in salt_roles %}
+    - {{ item }}
+{%- endfor %} 
 ##### Primary configuration settings #####
 ##########################################
 # This configuration file is used to manage the behavior of the Salt Minion.
@@ -233,7 +238,6 @@ file_roots:
 # The wait-time will be a random number of seconds between 0 and the defined value.
 #random_reauth_delay: 60
 
-
 # To avoid overloading a master when many minions startup at once, a randomized
 # delay may be set to tell the minions to wait before connecting to the master.
 # This value is the number of seconds to choose from for a random number. For
@@ -355,7 +359,6 @@ file_roots:
 # are evaluated by examining job caches on the minions or any configured returners.
 # WARNING: Setting this to False will **disable** returns back to the master.
 #pub_ret: True
-
 
 # The grains can be merged, instead of overridden, using this option.
 # This allows custom grains to defined different subvalues of a dictionary
@@ -505,7 +508,6 @@ file_roots:
 # Specify a max size (in bytes) for modules on import. This feature is currently
 # only supported on *nix operating systems and requires psutil.
 # modules_max_memory: -1
-
 
 #####    State Management Settings    #####
 ###########################################
@@ -734,7 +736,6 @@ file_roots:
 #  - uuid
 #  - server_id
 
-
 ######        Reactor Settings        #####
 ###########################################
 # Define a salt reactor. See https://docs.saltstack.com/en/latest/topics/reactor/
@@ -748,7 +749,6 @@ file_roots:
 
 #Define the queue size for workers in the reactor.
 #reactor_worker_hwm: 10000
-
 
 ######         Thread settings        #####
 ###########################################
@@ -765,7 +765,6 @@ file_roots:
 # publications than it is able to handle, as it limits the number of spawned
 # processes or threads. -1 is the default and disables the limit.
 #process_count_max: -1
-
 
 #####         Logging settings       #####
 ##########################################
@@ -885,7 +884,6 @@ file_roots:
 # The list of services to restart after a successful update. Empty by default.
 #update_restart_services: []
 
-
 ######      Keepalive settings        ######
 ############################################
 # ZeroMQ now includes support for configuring SO_KEEPALIVE if supported by
@@ -913,12 +911,10 @@ file_roots:
 # /proc/sys/net/ipv4/tcp_keepalive_intvl.
 #tcp_keepalive_intvl: -1
 
-
 ######   Windows Software settings    ######
 ############################################
 # Location of the repository cache file on the master:
 #win_repo_cachefile: 'salt://win/repo/winrepo.p'
-
 
 ######      Returner  settings        ######
 ############################################
@@ -932,7 +928,6 @@ file_roots:
 #  - mysql
 #  - hipchat
 #  - slack
-
 
 ######    Miscellaneous  settings     ######
 ############################################
