@@ -2,8 +2,6 @@
 {% set nebula_host = salt['grains.get']('nebula_hostname') %}
 {% set nebula_info = nebula_hosts | selectattr('name', 'equalto', nebula_host) | first %}
 
-{% from "maps/ports.jinja" import ports with context %}
-
 # {% for space, set in salt['mine.get']('lighthouse*', 'ip_list,nebula_groups,nebula_ips') | dictsort() %}
 #     {% set _ = scopes.update({space: set}) %}
 # {% endfor %}
@@ -15,9 +13,9 @@ pki:
   cert: {{ nebula_private }}/{{ nebula_host }}.crt
   key: {{ nebula_private }}/{{ nebula_host }}.key
 
-# Render out all the lighthouses to be reachable
+# Render out all the lighthouses to be reachable EXCEPT this one
 static_host_map:
-{%- for node in nebula_hosts if node.lighthouse %}
+{%- for node in nebula_hosts if node.lighthouse and node.name != nebula_host %}
     {%- set nebula_ip = node['ip'] %}
     "{{- nebula_ip.split('/')[0] }}": [{{ node['external_ip_port'] }}]
 {% endfor %}
@@ -25,7 +23,15 @@ static_host_map:
 lighthouse:
   # am_lighthouse is used to enable lighthouse functionality for a node. This should ONLY be true on nodes
   # you have configured to be lighthouses in your network
-  am_lighthouse: false
+  am_lighthouse: true
+  # serve_dns optionally starts a dns listener that responds to various queries and can even be
+  # delegated to for resolution
+  serve_dns: false
+  {# TODO: get DNS working... #}
+  {# dns:
+    # The DNS host defines the IP to bind the dns listener to. This also allows binding to the nebula node IP.
+    host: {{salt['grains.get']('nebula_ips')[0].split('/')[0]}}
+    port: {{pillar['ports']['nebula-local-dns']}} #}
   # interval is the number of seconds between updates from this node to a lighthouse.
   # during updates, a node sends information about its current IP addresses to each node.
   interval: 60
@@ -33,15 +39,12 @@ lighthouse:
   # IMPORTANT: THIS SHOULD BE EMPTY ON LIGHTHOUSE NODES
   # IMPORTANT2: THIS SHOULD BE LIGHTHOUSES' NEBULA IPs, NOT LIGHTHOUSES' REAL ROUTABLE IPs
   hosts:
-{%- for node in nebula_hosts if node.lighthouse %}
-    {%- set nebula_ip = node['ip'] %}
-    - "{{ nebula_ip.split('/')[0] }}"
-{%- endfor %}
+    # Empty on lighthouses
 
 listen:
   # To listen on both any ipv4 and ipv6 use "[::]"
   host: 0.0.0.0
-  port: 0 # Non-lighthouse nodes don't care about ports
+  port: 4242 # For lighthouses
 
 punchy:
   # Continues to punch inbound/outbound at a regular interval to avoid expiration of firewall nat mappings
@@ -62,7 +65,7 @@ tun:
   # Name of the device. If not set, a default will be chosen by the OS.
   # For macOS: if set, must be in the form `utun[0-9]+`.
   # For FreeBSD: Required to be set, must be in the form `tun[0-9]+`.
-  dev: nebulamain1
+  dev: nebulamain1 # Same as seed!
   # Toggles forwarding of local broadcast packets, the address of which depends on the ip/mask encoded in pki.cert
   drop_local_broadcast: false
   # Toggles forwarding of multicast packets
@@ -103,14 +106,13 @@ logging:
   # As an example, to log as RFC3339 with millisecond precision, set to:
   #timestamp_format: "2006-01-02T15:04:05.000Z07:00"
 
-{# 
-# stats:
-#   type: prometheus
-#   listen: 127.0.0.1:{{pillar['ports']['nebula-metrics']}}
-#   path: /metrics
-#   namespace: ""
-#   subsystem: nebula
-#   interval: 10s #}
+{# stats:
+  type: prometheus
+  listen: 127.0.0.1:{{pillar['ports']['nebula-metrics']}}
+  path: /metrics
+  namespace: ""
+  subsystem: nebula
+  interval: 10s #}
 
 # Handshake Manager Settings
 handshakes:
@@ -156,19 +158,29 @@ firewall:
     - port: any
       proto: icmp
       host: any
-
-{% if 'vm-host' in salt['grains.get']('roles') %}
-    # proxmox-webui
-    - port: {{ports['proxmox-webui']}}
-      proto: any
+{# 
+    # Allow dns through the tunnel
+    - port: {{pillar['ports']['nebula-local-dns']}}
+      proto: udp
       host: any
-      # TODO: validate group blocks access
-      group: 'vm-manager'
-{% endif %}
+    # Allow dns through the tunnel
+    - port: {{pillar['ports']['nebula-local-dns-local']}}
+      proto: udp
+      host: any
 
-{# {% if 'observability' in salt['grains.get']('nebula_groups') %}
-    # Allow victoria metric remote writes
-    - port: {{pillar['ports']['victoria-metrics-server-http']}}
+    {#
+    See config.node.yaml for extended comment on why this is necessary to keep
+    things working across highstates.
+    #}
+    - port: any
       proto: tcp
+      host: any
+      groups:
+        - salt-master
+
+{% if 'connectivity-checker' in salt['grains.get']('nebula_groups') %}
+    # Allow memberlist
+    - port: {{pillar['ports']['connectivity_memberlist']}}
+      proto: any
       host: any
 {% endif %} #}

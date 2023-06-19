@@ -35,6 +35,9 @@ base:
     - nebula/nebula_bin
     - nebula/nebula-ca
 
+  'roles:vm-host':
+    - match: grain
+    {# TODO: this just notes existence #}
 
   'roles:torrent-vm-host':
     - match: grain
