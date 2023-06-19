@@ -2,6 +2,8 @@
     "name": "laggy"
 } %}
 
+{% set external_ips = pillar.get('nebula_external_ips', {}) %}
+
 {% set nebula_hosts = ([
     {
         "name": "vms",
@@ -16,11 +18,17 @@
         "lighthouse": false,
     },
     {
+        "name": "1m1",
+        "ip": '192.168.100.3/24',
+        "groups": ["vm-host"],
+        "lighthouse": false,
+    },
+    {
         "name": "lighthouse-do",
         "ip": '192.168.100.224/24',
         "groups": [],
         "lighthouse": true,
-        "external_ip_port": "192.168.1.10:4242",
+        "external_ip_port": external_ips["lighthouse-do"],
     },
 ]) %}
 
