@@ -17,6 +17,11 @@ base:
     - tools/go
     - tools/nvm
 
+  "roles:browser":
+    - match: grain
+    - browser/chrome
+    {# - browser/firefox #}
+
   'roles:docker':
     - match: grain
     - docker/docker

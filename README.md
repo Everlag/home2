@@ -84,6 +84,19 @@ Proxmox base templates are easy to initialize; this generates an image that has 
 1. run `vm/initialize_base_image.sh` within the fresh VM
 1. shutdown and create template
 
+# nebula
+
+To execute nebula-related states, you need a pillar at `/srv/pillar` that contains a list of ip:port pairs for lighthouse-related contents.
+
+The recommendation is to keep these as a separate git repo, clone it separately, and then
+
+```bash
+ln -s /media/pillar /srv/pillar
 ```
 
+ie
+
+```yaml
+nebula_external_ips:
+  "lighthouse-do": 1.2.3.4:4242
 ```
