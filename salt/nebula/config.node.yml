@@ -166,6 +166,12 @@ firewall:
       group: 'vm-manager'
 {% endif %}
 
+{% if 'file-tester' in salt['grains.get']('roles') %}
+    - port: 3600
+      proto: any
+      host: any
+{% endif %}
+
 {# {% if 'observability' in salt['grains.get']('nebula_groups') %}
     # Allow victoria metric remote writes
     - port: {{pillar['ports']['victoria-metrics-server-http']}}
