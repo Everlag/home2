@@ -6,7 +6,7 @@
 {% set nebula_ca_location = "/etc/nebula-ca" %}
 {% set nebula_keys_location = "/etc/nebula-ca/keys" %}
 
-{% from "maps/nebula.jinja" import nebula_ca, nebula_hosts with context %}
+{% from "maps/nebula.jinja" import nebula_ca, nebula_hosts, nebula_certpack_password with context %}
 
 nebula_ca:
     cmd.run:
@@ -61,8 +61,18 @@ nebula_cert_pack_{{ host['name'] }}:
   cmd.run:
     - name: |
         cd {{ nebula_keys_location }}
-        7z a {{ host['name'] }}.7z {{host['name']}}.crt {{host['name']}}.key ../ca.crt
+        7z a {{ host['name'] }}.7z {{host['name']}}.crt {{host['name']}}.key ../ca.crt -p{{ nebula_certpack_password }}
     - unless: test -f {{ nebula_keys_location }}/{{ host['name'] }}.7z
     - require:
         - cmd: verify_signed_{{ host['name'] }}
+
+{# base64 the certpacks for easy copy-paste #}
+nebula_cert_pack_b64_{{ host['name'] }}:
+  cmd.run:
+    - name: |
+        cd {{ nebula_keys_location }}
+        cat {{ host['name'] }}.7z | base64 --wrap 0 > {{ host['name'] }}.b64
+    - unless: test -f {{ nebula_keys_location }}/{{ host['name'] }}.b64
+    - require:
+        - cmd: nebula_cert_pack_{{ host['name'] }}
 {% endfor %}

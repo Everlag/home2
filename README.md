@@ -1,3 +1,6 @@
+TODO
+sudo salt-call --local --id=initial-setup state.apply baseline pillar='{"SALT_ROLES": "nebula-ca", "NEBULA_HOSTNAME": "issuer"}'
+
 ## Preparing
 
 There's some steps we need to execute before salt will be able to execute

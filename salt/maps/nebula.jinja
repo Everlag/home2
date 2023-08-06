@@ -4,6 +4,9 @@
 
 {% set external_ips = pillar.get('nebula_external_ips', {}) %}
 
+{# Force a failure if value is not present. #}
+{% set nebula_certpack_password = pillar['nebula_certpack_password'] %}
+
 {% set nebula_hosts = ([
     {
         "name": "vms",
@@ -24,6 +27,12 @@
         "lighthouse": false,
     },
     {
+        "name": "issuer",
+        "ip": '192.168.100.223/24',
+        "groups": [],
+        "lighthouse": false,
+    },
+    {
         "name": "lighthouse-do",
         "ip": '192.168.100.224/24',
         "groups": [],
@@ -31,4 +40,3 @@
         "external_ip_port": external_ips["lighthouse-do"],
     },
 ]) %}
-

@@ -1,4 +1,4 @@
-{% from "maps/nebula.jinja" import nebula_hosts with context %}
+{% from "maps/nebula.jinja" import nebula_hosts, nebula_certpack_password with context %}
 
 {% set nebula_host = salt['grains.get']('nebula_hostname') %}
 {% set nebula_info = nebula_hosts | selectattr('name', 'equalto', nebula_host) | first %}
@@ -53,7 +53,7 @@ nebula_cert_pack_extract:
   cmd.run:
     - name: |
         cd {{ nebula_private }}
-        7z x {{ nebula_cert_pack }}
+        7z x {{ nebula_cert_pack }} -p{{ nebula_certpack_password }}
     - unless: test -f {{ nebula_private }}/{{ nebula_host }}.crt && test -f  {{ nebula_private }}/{{ nebula_host }}.key
     - require:
       - cmd: nebula_cert_pack_exists
