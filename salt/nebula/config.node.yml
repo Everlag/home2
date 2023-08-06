@@ -157,7 +157,7 @@ firewall:
       proto: icmp
       host: any
 
-{% if 'vm-host' in salt['grains.get']('roles') %}
+{% if 'vm-ui' in salt['grains.get']('roles') %}
     # proxmox-webui
     - port: {{ports['proxmox-webui']}}
       proto: any
