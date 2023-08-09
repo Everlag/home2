@@ -1,3 +1,6 @@
+TODO
+sudo salt-call --local --id=initial-setup state.apply baseline pillar='{"SALT_ROLES": "nebula-ca", "NEBULA_HOSTNAME": "issuer"}'
+
 ## Preparing
 
 There's some steps we need to execute before salt will be able to execute
@@ -41,13 +44,24 @@ Prior to this working, get the contents of the salt directory to `/srv/salt`, pr
 
 Note: we use the minion id in a hacky manner
 
+First, initialize our salt minion file with the desired roles.
+Check the `top.sls` file to see what roles a given server should have.
+
 ```bash
 # apply critical dependency including minion config
-sudo salt-call --local --id=setup state.apply baseline
+#
+# NOTE: the SALT_ROLES here controls what states will be applied
+# and how that state will be rendered(ie, for nebula config if applicable)
+sudo salt-call --local --id=initial-setup state.apply baseline pillar='{"SALT_ROLES": "role1 role2 role3", "NEBULA_HOSTNAME": "$NEBULA_HOSTNAME"}
+```
+
+```bash
 
 # Highstate all configuration
-sudo salt-call --local --id=setup state.apply
 
+sudo salt-call --local state.apply
+
+# Present depending on enabled roles.
 ./install_extensions.sh # created by vscode state
 ./load_x_preferences.sh # created by comfort state
 ```
@@ -56,7 +70,7 @@ For docker support
 
 ```bash
 # docker fun flakiness, requires manual execution and maybe multiple retries
-sudo salt-call --local --id=docker-host state.apply.apply docker
+sudo salt-call --local state.apply.apply docker
 ```
 
 Then reboot and get into a graphical env using
@@ -72,3 +86,29 @@ Proxmox base templates are easy to initialize; this generates an image that has 
 1. boot up a debian image(11 is a known good version) as a fresh VM
 1. run `vm/initialize_base_image.sh` within the fresh VM
 1. shutdown and create template
+
+# nebula
+
+To execute nebula-related states, you need a pillar at `/srv/pillar` that contains a list of ip:port pairs for lighthouse-related contents.
+
+The recommendation is to keep these as a separate git repo, clone it separately, and then
+
+```bash
+ln -s /media/pillar /srv/pillar
+```
+
+ie
+
+```yaml
+nebula_external_ips:
+  "lighthouse-do": 1.2.3.4:4242
+```
+
+# Individual host setup
+
+## 1m1 - vm host
+
+```bash
+salt-call --local --id initial-setup state.apply baseline pillar='{"SALT_ROLES": "nebula-node vm-ui docker", "NEBULA_HOSTNAME": "1m1" }'
+salt-call --local state.apply
+```

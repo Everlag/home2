@@ -1,0 +1,48 @@
+{% set nebula_ca = {
+    "name": "laggy"
+} %}
+
+{% set external_ips = pillar.get('nebula_external_ips', {}) %}
+
+{# Force a failure if value is not present. #}
+{% set nebula_certpack_password = pillar['nebula_certpack_password'] %}
+
+{% set nebula_hosts = ([
+    {
+        "name": "vms",
+        "ip": '192.168.100.1/24',
+        "groups": ["vm-host"],
+        "lighthouse": false,
+    },
+    {
+        "name": "windows-client",
+        "ip": '192.168.100.2/24',
+        "groups": ["vm-host"],
+        "lighthouse": false,
+    },
+    {
+        "name": "1m1",
+        "ip": '192.168.100.3/24',
+        "groups": ["vm-host"],
+        "lighthouse": false,
+    },
+    {
+        "name": "phone-client",
+        "ip": '192.168.100.4/24',
+        "groups": [],
+        "lighthouse": false,
+    },
+    {
+        "name": "issuer",
+        "ip": '192.168.100.223/24',
+        "groups": [],
+        "lighthouse": false,
+    },
+    {
+        "name": "lighthouse-do",
+        "ip": '192.168.100.224/24',
+        "groups": [],
+        "lighthouse": true,
+        "external_ip_port": external_ips["lighthouse-do"],
+    },
+]) %}
