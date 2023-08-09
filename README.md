@@ -103,3 +103,12 @@ ie
 nebula_external_ips:
   "lighthouse-do": 1.2.3.4:4242
 ```
+
+# Individual host setup
+
+## 1m1 - vm host
+
+```bash
+salt-call --local --id initial-setup state.apply baseline pillar='{"SALT_ROLES": "nebula-node vm-ui docker", "NEBULA_HOSTNAME": "1m1" }'
+salt-call --local state.apply
+```

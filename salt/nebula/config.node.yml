@@ -161,7 +161,8 @@ firewall:
     # proxmox-webui
     - port: {{ports['proxmox-webui']}}
       proto: any
-      host: any
+      # NOTE: 'host: any' is NOT a good idea when you want to limit
+      # with groups host/groups is an OR relationship.
       # TODO: validate group blocks access
       group: 'vm-manager'
 {% endif %}
