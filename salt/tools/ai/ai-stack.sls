@@ -31,6 +31,15 @@
     - makedirs: True
     - template: jinja
 
+{{ ai_loc }}/nginx.conf:
+    file.managed:
+    - source: salt://tools/ai/nginx.conf
+    - user: root
+    - group: root
+    - mode: 644
+    - makedirs: True
+    - template: jinja
+
 {{ ai_loc }}/docker-compose.yml:
     file.managed:
     - source: salt://tools/ai/docker-compose.yml
@@ -44,5 +53,6 @@
       nebula_ip: {{ nebula_info['ip'].split('/')[0] }}
     - require:
       - git: {{ silly_tavern_loc }}
+      - file: {{ ai_loc }}/nginx.conf
       - file: {{ ai_loc }}/Dockerfile.koboldcpp
       - file: {{ silly_tavern_config_loc }}/config.conf

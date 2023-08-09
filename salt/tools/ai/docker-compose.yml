@@ -1,6 +1,9 @@
 # comment to keep editor from exploding in rage, jinja still applies...
 # {% from "maps/ports.jinja" import ports with context %}
 
+# We use nginx as the access point; this ensures that nothing else
+# is allowed general network access. 
+
 version: "3"
 services:
   sillytavern:
@@ -8,10 +11,6 @@ services:
       context: ./sillytavern/.
     image: sillytavern:local # local tag
     container_name: sillytavern
-    # hostname: sillytavern
-    ports:
-      # TODO: only listen on nebula interface!!
-      - "{{ nebula_ip }}:{{ ports['sillytavern'] }}:8000"
     volumes:
       - "{{ silly_tavern_config_loc }}:/home/node/app/config"
     logging: &logconfig
@@ -20,17 +19,45 @@ services:
         max-size: 10m
         max-file: "3"
     restart: unless-stopped
-  # koboldcpp:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile.koboldcpp
-  #   image: koboldcpp:local # local tag
-  #   container_name: koboldcpp
-  #   # hostname: sillytavern
-  #   ports:
-  #     - "8000:8000"
-  #   volumes:
-  #     - "./config:/home/node/app/config"
-  #   logging: *logconfig
-  #   restart: unless-stopped
-  #   # TODO: handle mounting the image...
+    networks:
+      internal-only:
+  nginx-ingress:
+    image: nginx:mainline-alpine
+    container_name: nginx-ingress
+    volumes:
+      - "./nginx.conf:/etc/nginx/nginx.conf"
+    logging: *logconfig
+    depends_on:
+      - sillytavern
+    ports:
+      - "{{ nebula_ip }}:{{ ports['sillytavern'] }}:5002"
+      - "{{ nebula_ip }}:{{ 2000 }}:80"
+    networks:
+      internal-only:
+      gateway-to-external:
+
+        # mainline-alpine
+        # koboldcpp:
+        #   build:
+        #     context: .
+        #     dockerfile: Dockerfile.koboldcpp
+        #   image: koboldcpp:local # local tag
+        #   container_name: koboldcpp
+        #   # hostname: sillytavern
+        #   ports:
+        #     - "8000:8000"
+        #   volumes:
+        #     - "./config:/home/node/app/config"
+        #   logging: *logconfig
+        #   restart: unless-stopped
+        #   # TODO: handle mounting the image...
+
+        # TODO: steal gpu-optional stuff from
+        # https://github.com/noneabove1182/koboldcpp-docker/blob/main/docker-compose.yml
+
+networks:
+  internal-only:
+    name: internal-only
+    internal: true
+  gateway-to-external:
+    name: gateway-to-external
