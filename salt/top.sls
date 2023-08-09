@@ -32,6 +32,7 @@ base:
     - common
     - nebula/nebula_bin
     - nebula/nebula-node
+    - tools/go
 
    {# nebula-ca is allowed to sign new certificates #}
   'roles:nebula-ca':
