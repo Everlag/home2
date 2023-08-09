@@ -173,3 +173,8 @@ firewall:
     - port: {{ports['adhoc-server']}}
       proto: any
       host: any
+
+# TODO: block based on group AND role
+    - port: {{ports['sillytavern']}}
+      proto: any
+      host: any

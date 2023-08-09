@@ -1,0 +1,36 @@
+# comment to keep editor from exploding in rage, jinja still applies...
+# {% from "maps/ports.jinja" import ports with context %}
+
+version: "3"
+services:
+  sillytavern:
+    build:
+      context: ./sillytavern/.
+    image: sillytavern:local # local tag
+    container_name: sillytavern
+    # hostname: sillytavern
+    ports:
+      # TODO: only listen on nebula interface!!
+      - "{{ nebula_ip }}:{{ ports['sillytavern'] }}:8000"
+    volumes:
+      - "{{ silly_tavern_config_loc }}:/home/node/app/config"
+    logging: &logconfig
+      driver: "local"
+      options:
+        max-size: 10m
+        max-file: "3"
+    restart: unless-stopped
+  # koboldcpp:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.koboldcpp
+  #   image: koboldcpp:local # local tag
+  #   container_name: koboldcpp
+  #   # hostname: sillytavern
+  #   ports:
+  #     - "8000:8000"
+  #   volumes:
+  #     - "./config:/home/node/app/config"
+  #   logging: *logconfig
+  #   restart: unless-stopped
+  #   # TODO: handle mounting the image...
