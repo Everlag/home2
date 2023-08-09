@@ -16,7 +16,7 @@ verify_checksum_go:
   cmd.run:
     - name: |
         echo {{ go_hash }} {{ go_tmp }} | sha256sum --check --status
-    - require:
+    - onchanges:
       - cmd: fetch_package_go
 
 install_package_go:
@@ -25,12 +25,12 @@ install_package_go:
         rm -rf /usr/local/go
         tar -C /usr/local -xzf {{ go_tmp }}
     - unless: test -d /usr/local/go # don't rerun if already present
-    - require:
+    - onchanges:
         - cmd: verify_checksum_go
 
 verify_go:
   cmd.run:
     {# A little dirty PATH stuff for root to see go #}
     - name: PATH=/usr/local/go/bin:$PATH go version
-    - require:
+    - onchanges:
       - cmd: install_package_go
