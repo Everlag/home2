@@ -48,6 +48,23 @@
     - makedirs: True
     - template: jinja
 
+{{ ai_loc }}/.env:
+  file.managed:
+    - contents: {{ salt['pillar.get']('ai_model_env') | yaml_encode }}
+    - user: root
+    - group: root
+    - mode: 644
+    - makedirs: True
+
+{# Informative #}
+{{ ai_loc }}/SELECT_MODEL_WITH_.env:
+  file.managed:
+    - contents: ''
+    - user: root
+    - group: root
+    - mode: 644
+    - makedirs: True
+
 {{ ai_loc }}/docker-compose.yml:
     file.managed:
     - source: salt://tools/ai/docker-compose.yml
@@ -64,3 +81,4 @@
       - file: {{ ai_loc }}/nginx.conf
       - file: {{ ai_loc }}/Dockerfile.koboldcpp
       - file: {{ silly_tavern_config_loc }}/config.conf
+      - file: {{ ai_loc }}/.env

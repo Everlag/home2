@@ -175,6 +175,9 @@ firewall:
       host: any
 
 # TODO: block based on group AND role
+  - port: {{ports['koboldcpp']}}
+      proto: any
+      host: any
     - port: {{ports['sillytavern']}}
       proto: any
       host: any
