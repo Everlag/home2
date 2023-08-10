@@ -33,6 +33,7 @@ base:
     - nebula/nebula_bin
     - nebula/nebula-node
     - tools/go
+    - nebula/adhoc-server/adhoc-server
 
    {# nebula-ca is allowed to sign new certificates #}
   'roles:nebula-ca':
