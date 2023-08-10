@@ -108,7 +108,9 @@ nebula_external_ips:
 
 ## 1m1 - vm host
 
+(Note: if host doesn't have a gpu, DO NOT include 'ai-gpu')
+
 ```bash
-salt-call --local --id initial-setup state.apply baseline pillar='{"SALT_ROLES": "nebula-node vm-ui docker", "NEBULA_HOSTNAME": "1m1" }'
+salt-call --local --id initial-setup state.apply baseline pillar='{"SALT_ROLES": "nebula-node vm-ui docker ai-enable ai-gpu", "NEBULA_HOSTNAME": "1m1" }'
 salt-call --local state.apply
 ```

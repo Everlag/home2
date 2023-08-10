@@ -41,6 +41,11 @@ base:
     - nebula/nebula_bin
     - nebula/nebula-ca
 
+  'roles:ai-enable':
+    - match: grain
+    - common
+    - tools/ai/ai-stack
+
   'roles:vm-host':
     - match: grain
     {# TODO: this just notes existence #}

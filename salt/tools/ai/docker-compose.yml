@@ -21,6 +21,48 @@ services:
     restart: unless-stopped
     networks:
       internal-only:
+  koboldcpp:
+    build:
+      context: .
+      dockerfile: Dockerfile.koboldcpp
+    image: koboldcpp:local # local tag
+    container_name: koboldcpp
+    volumes:
+      - "./models:/app/models/"
+    logging: *logconfig
+    restart: unless-stopped
+    networks:
+      internal-only:
+    ulimits:
+      memlock: -1
+    # {% if 'ai-gpu' in salt['grains.get']('roles') %}
+    # gpu stuff :meltyface: the command also has arguments appended to help out
+    mem_limit: 50gb
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]
+    # {% endif %}
+    command:
+      [
+        "python3",
+        "koboldcpp.py",
+        "--model",
+        "/app/models/${MODEL}",
+        "--port",
+        "5001",
+        "--threads",
+        "12",
+        # {% if 'ai-gpu' in salt['grains.get']('roles') %}
+        "--usemlock",
+        "--usecublas",
+        "0",
+        "--gpulayers",
+        "43" # {% endif %}
+      ]
   nginx-ingress:
     image: nginx:mainline-alpine
     container_name: nginx-ingress
@@ -30,30 +72,12 @@ services:
     depends_on:
       - sillytavern
     ports:
+      - "{{ nebula_ip }}:{{ ports['koboldcpp'] }}:5001"
       - "{{ nebula_ip }}:{{ ports['sillytavern'] }}:5002"
-      - "{{ nebula_ip }}:{{ 2000 }}:80"
     networks:
       internal-only:
       gateway-to-external:
 
-        # mainline-alpine
-        # koboldcpp:
-        #   build:
-        #     context: .
-        #     dockerfile: Dockerfile.koboldcpp
-        #   image: koboldcpp:local # local tag
-        #   container_name: koboldcpp
-        #   # hostname: sillytavern
-        #   ports:
-        #     - "8000:8000"
-        #   volumes:
-        #     - "./config:/home/node/app/config"
-        #   logging: *logconfig
-        #   restart: unless-stopped
-        #   # TODO: handle mounting the image...
-
-        # TODO: steal gpu-optional stuff from
-        # https://github.com/noneabove1182/koboldcpp-docker/blob/main/docker-compose.yml
 
 networks:
   internal-only:

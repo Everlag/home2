@@ -31,6 +31,14 @@
     - makedirs: True
     - template: jinja
 
+{{ silly_tavern_config_loc }}/settings.json:
+  file.managed:
+    - source: salt://tools/ai/sillytavern-config/settings.json
+    - user: root
+    - group: root
+    - mode: 644
+    - makedirs: True
+
 {{ ai_loc }}/nginx.conf:
     file.managed:
     - source: salt://tools/ai/nginx.conf
