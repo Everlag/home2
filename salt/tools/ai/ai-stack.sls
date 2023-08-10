@@ -82,3 +82,13 @@
       - file: {{ ai_loc }}/Dockerfile.koboldcpp
       - file: {{ silly_tavern_config_loc }}/config.conf
       - file: {{ ai_loc }}/.env
+
+{{ ai_loc }}/boot_stack.sh:
+  file.managed:
+    - contents: 'docker compose down -v -t0 && docker compose up -d --build'
+    - user: root
+    - group: root
+    - mode: 755
+    - makedirs: True
+    - require:
+      - file: {{ ai_loc }}/docker-compose.yml
