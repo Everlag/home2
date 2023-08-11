@@ -7,13 +7,31 @@ services:
       dockerfile: Dockerfile.stablediffusion
     image: stablediff:local # local tag
     container_name: stablediff
+    # NOTE: this is a different way to handle gpus
+    # than the LLM stuff... maybe a better idea to do things
+    # this way but I'll cargo cult both for now
+    # {% if 'ai-gpu' in salt['grains.get']('roles') %}
+    runtime: nvidia
+    # {% endif %}
+    environment:
+      SALTPADDING: "throwaway"
+      # {% if 'ai-gpu' in salt['grains.get']('roles') %}
+      NVIDIA_VISIBLE_DEVICES: all
+      # {% endif %}
     entrypoint:
       [
         "python",
         "launch.py",
         "--listen",
         "--no-download-sd-model",
-        "--xformers"
+        # {% if 'ai-gpu' not in salt['grains.get']('roles') %}
+        "--xformers",
+        "--use-cpu",
+        "all",
+        "--precision",
+        "full",
+        "--no-half",
+        "--skip-torch-cuda-test" # {% endif %}
       ]
     # command: >
     #   ". /stablediff.env; echo launch.py $$COMMANDLINE_ARGS; if [ ! -d /stablediff-web/.git ]; then
