@@ -27,8 +27,8 @@ services:
         "launch.py",
         "--listen",
         "--no-download-sd-model",
-        # {% if 'ai-gpu' not in salt['grains.get']('roles') %}
         "--xformers",
+        # {% if 'ai-gpu' not in salt['grains.get']('roles') %}
         "--use-cpu",
         "all",
         "--precision",
