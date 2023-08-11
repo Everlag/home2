@@ -1,0 +1,23 @@
+#FROM python:3.10.6-bullseye
+FROM {{ base_cuda_image }} as builder
+ENV DEBIAN_FRONTEND=noninteractive \
+    PYTHONUNBUFFERED=1 \
+    PYTHONIOENCODING=UTF-8
+WORKDIR /stablediff-web
+RUN apt-get update &&\
+    apt-get install -y wget git python3 python-is-python3 python3-pip
+RUN python -m pip install --upgrade pip wheel
+RUN git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui /stablediff-web && \
+    cd /stablediff-web && \
+    git checkout v1.5.1
+
+#torch and torchvision version number refer to
+#https://github.com/AUTOMATIC1111/stable-diffusion-webui/blob/master/launch.py
+ENV TORCH_COMMAND="pip install torch==1.12.1+cpu torchvision==0.13.1+cpu --extra-index-url https://download.pytorch.org/whl/cpu"
+RUN python -m $TORCH_COMMAND
+
+# Install dependencies for effective offline operation
+RUN python launch.py \
+    --skip-torch-cuda-test --reinstall-xformers --reinstall-torch --exit
+RUN python -m pip install opencv-python-headless
+WORKDIR /stablediff-web

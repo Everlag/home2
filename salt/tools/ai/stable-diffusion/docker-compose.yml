@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  stablediff:
+    build:
+      context: .
+      dockerfile: Dockerfile.stablediffusion
+    image: stablediff:local # local tag
+    container_name: stablediff
+    entrypoint:
+      [
+        "python",
+        "launch.py",
+        "--listen",
+        "--no-download-sd-model",
+        "--xformers"
+      ]
+    # command: >
+    #   ". /stablediff.env; echo launch.py $$COMMANDLINE_ARGS; if [ ! -d /stablediff-web/.git ]; then
+    #     cp -a /sdtemp/. /stablediff-web/
+    #   fi; #if [ ! -f /stablediff-web/models/Stable-diffusion/*.ckpt ]; then #  echo 'Please copy stable diffusion model to stablediff-models directory' #  echo 'You may need sudo to perform this action' #  exit 1 #fi; python launch.py"
+    ports:
+      - "7860:7860"
+    volumes:
+      - ./stablediff-web:/stablediff-web
+      - ./models:/stablediff-web/models/Stable-diffusion

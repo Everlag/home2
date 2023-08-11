@@ -4,7 +4,7 @@
 # and to keep openblas around.
 
 # cuda devel image for base, best build compatibility
-FROM nvidia/cuda:11.8.0-devel-ubuntu22.04 as builder
+FROM {{ base_cuda_image }} as builder
 
 ENV KOBOLDCPP_VERSION=v1.39.1
 

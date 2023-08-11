@@ -80,6 +80,7 @@ services:
       internal-only:
       gateway-to-external:
 
+        # TODO: limit num cpus for koboldcpp
 
 networks:
   internal-only:

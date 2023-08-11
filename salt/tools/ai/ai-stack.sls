@@ -3,6 +3,7 @@
 {% set silly_tavern_config_loc = ai_loc + "/sillytavern-config" %}
 
 {% from "maps/nebula.jinja" import nebula_hosts, nebula_certpack_password with context %}
+{% from "maps/ai-stack.jinja" import base_cuda_image with context %}
 
 {% set nebula_host = salt['grains.get']('nebula_hostname') %}
 {% set nebula_info = nebula_hosts | selectattr('name', 'equalto', nebula_host) | first %}
@@ -21,6 +22,8 @@
     - mode: 644
     - makedirs: True
     - template: jinja
+    - context:
+      base_cuda_image: {{ base_cuda_image }}
 
 {{ silly_tavern_config_loc }}/config.conf:
   file.managed:
