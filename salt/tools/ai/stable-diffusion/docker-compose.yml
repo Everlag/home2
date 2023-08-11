@@ -40,5 +40,4 @@ services:
     ports:
       - "7860:7860"
     volumes:
-      - ./stablediff-web:/stablediff-web
       - ./models:/stablediff-web/models/Stable-diffusion
