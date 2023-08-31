@@ -6,7 +6,7 @@
 # cuda devel image for base, best build compatibility
 FROM {{ base_cuda_image }} as builder
 
-ENV KOBOLDCPP_VERSION=v1.39.1
+ENV KOBOLDCPP_VERSION=v1.42.1
 
 # Update base image and install dependencies
 RUN apt-get update && apt-get upgrade -y \
