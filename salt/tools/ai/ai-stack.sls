@@ -11,7 +11,7 @@
 {{ silly_tavern_loc }}:
     git.detached:
       - name: https://github.com/SillyTavern/SillyTavern.git
-      - rev: 1.10.4
+      - rev: 1.10.7
       - target: {{ silly_tavern_loc }}
 
 {{ ai_loc }}/Dockerfile.koboldcpp:
