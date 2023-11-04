@@ -6,8 +6,6 @@
 # cuda devel image for base, best build compatibility
 FROM {{ base_cuda_image }} as builder
 
-ENV KOBOLDCPP_VERSION=v1.47.2
-
 # Update base image and install dependencies
 RUN apt-get update && apt-get upgrade -y \
     && apt-get install -y git build-essential \
@@ -17,6 +15,8 @@ RUN apt-get update && apt-get upgrade -y \
     && mkdir -p /etc/OpenCL/vendors && echo "libnvidia-opencl.so.1" > /etc/OpenCL/vendors/nvidia.icd
 
 WORKDIR /koboldcpp
+
+ENV KOBOLDCPP_VERSION=v1.48
 
 # Pulling latest koboldcpp branch and installing requirements
 RUN git clone https://github.com/LostRuins/koboldcpp.git --branch ${KOBOLDCPP_VERSION} ./
