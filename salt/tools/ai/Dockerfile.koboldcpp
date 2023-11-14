@@ -16,7 +16,7 @@ RUN apt-get update && apt-get upgrade -y \
 
 WORKDIR /koboldcpp
 
-ENV KOBOLDCPP_VERSION=v1.48
+ENV KOBOLDCPP_VERSION=v1.49
 
 # Pulling latest koboldcpp branch and installing requirements
 RUN git clone https://github.com/LostRuins/koboldcpp.git --branch ${KOBOLDCPP_VERSION} ./
