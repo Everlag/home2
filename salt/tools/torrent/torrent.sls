@@ -142,6 +142,39 @@
     - require:
         - file: {{ loc }}/homepage/tpl
 
+{{ loc }}/homepage/tpl/bookmarks.yaml:
+  file.managed:
+    - user: root
+    - group: root
+    - mode: 544
+    - makedirs: True
+    - contents: |
+        ---
+        # For configuration options and examples, please see:
+        # https://gethomepage.dev/en/configs/bookmarks
+        #
+        # overwrite annoying default
+    - require:
+        - file: {{ loc }}/homepage/tpl
+
+{{ loc }}/homepage/tpl/widgets.yaml:
+  file.managed:
+    - user: root
+    - group: root
+    - mode: 544
+    - makedirs: True
+    - contents: |
+        ---
+        # For configuration options and examples, please see:
+        # https://gethomepage.dev/en/configs/service-widgets
+
+        - resources:
+            cpu: true
+            memory: true
+            disk: /
+    - require:
+        - file: {{ loc }}/homepage/tpl
+
 /etc/systemd/system/torrent.service:
   file.managed:
     - source: salt://tools/torrent/torrent.service
