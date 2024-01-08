@@ -6,6 +6,14 @@
 {% set nebula_host = salt['grains.get']('nebula_hostname') %}
 {% set nebula_info = nebula_hosts | selectattr('name', 'equalto', nebula_host) | first %}
 
+{#
+    This is based off a modified version of docker-compose-nas
+    https://github.com/AdrienPoupa/docker-compose-nas
+
+    Stripped down and with different opinions.
+    Typical access: http://${NEBULA_IP}/qbittorrent/
+#}
+
 {{ loc }}/docker-compose.yml:
   file.managed:
     - source: salt://tools/torrent/docker-compose.yml
@@ -36,3 +44,10 @@
     - group: root
     - mode: 644
     - makedirs: True
+
+{{ loc }}/downloads:
+  file.directory:
+    - user: root
+    - group: root
+    - dir_mode: 777
+    - file_mode: 666
