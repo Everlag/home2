@@ -11,7 +11,8 @@
     https://github.com/AdrienPoupa/docker-compose-nas
 
     Stripped down and with different opinions.
-    Typical access: http://${NEBULA_IP}/qbittorrent/
+    qbittorent access: http://${NEBULA_IP}/qbittorrent/
+    jellyfin access: http://${NEBULA_IP}/jellyfin/web/index.html
 #}
 
 {{ loc }}/docker-compose.yml:
