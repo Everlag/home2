@@ -167,7 +167,7 @@ firewall:
       group: 'vm-manager'
 {% endif %}
 
-{% if 'torrent-box in salt['grains.get']('roles') %}
+{% if 'torrent-box' in salt['grains.get']('roles') %}
     # torrent UI
     - port: {{ports['torrent_ui']}}
       proto: any
