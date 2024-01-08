@@ -1,0 +1,9 @@
+USER_ID=1000
+GROUP_ID=1000
+
+MULLVAD_WIREGUARD_PRIVATE_KEY={{ mullvad_private_key }}
+MULLVAD_ADDRESS={{ mullvad_addresses }}
+
+HOSTNAME=localhost
+TIMEZONE="American/New_York"
+DOWNLOAD_ROOT="./downloads"

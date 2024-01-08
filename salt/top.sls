@@ -47,6 +47,11 @@ base:
     - common
     - tools/ai/ai-stack
 
+  'roles:torrent-box':
+    - match: grain
+    - common
+    - tools/torrent/torrent
+
   'roles:vm-host':
     - match: grain
     {# TODO: this just notes existence #}
