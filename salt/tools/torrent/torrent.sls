@@ -62,3 +62,82 @@
     - file_mode: 666
     - require:
         - file: {{ loc }}/downloads
+
+{{ loc }}/homepage:
+  file.directory:
+    - user: root
+    - group: root
+    - dir_mode: 777
+    - file_mode: 544
+    - require:
+        - file: {{ loc }}/downloads
+
+{{ loc }}/homepage/tpl:
+  file.directory:
+    - user: root
+    - group: root
+    - dir_mode: 777
+    - file_mode: 544
+    - require:
+        - file: {{ loc }}/homepage
+
+{{ loc }}/homepage/tpl/docker.yaml:
+  file.managed:
+    - user: root
+    - group: root
+    - mode: 544
+    - makedirs: True
+    - contents: |
+        ---
+        # For configuration options and examples, please see:
+        # https://gethomepage.dev/en/configs/docker/
+
+        my-docker:
+          socket: /var/run/docker.sock
+    - require:
+        - file: {{ loc }}/homepage/tpl
+
+{{ loc }}/homepage/tpl/settings.yaml:
+  file.managed:
+    - user: root
+    - group: root
+    - mode: 544
+    - makedirs: True
+    - contents: |
+        ---
+        # For configuration options and examples, please see:
+        # https://gethomepage.dev/en/configs/settings
+
+        title: {% raw %}{{HOMEPAGE_VAR_TITLE}}{% endraw %}
+
+        headerStyle: boxed
+
+        layout:
+          Media:
+            style: row
+            columns: 3
+          Download:
+            style: row
+            columns: 2
+
+        quicklaunch:
+          searchDescriptions: true
+          hideInternetSearch: true
+          hideVisitURL: true
+    - require:
+      - file: {{ loc }}/homepage/tpl
+
+{{ loc }}/homepage/tpl/services.yaml:
+  file.managed:
+    - user: root
+    - group: root
+    - mode: 544
+    - makedirs: True
+    - contents: |
+        ---
+        # For configuration options and examples, please see:
+        # https://gethomepage.dev/en/configs/services
+        #
+        # overwrite annoying default
+    - require:
+        - file: {{ loc }}/homepage/tpl

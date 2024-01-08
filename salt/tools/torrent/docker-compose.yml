@@ -72,6 +72,10 @@ services:
       - traefik.http.middlewares.qbittorrent-strip-slash.redirectregex.regex=(^.*\/qbittorrent$$)
       - traefik.http.middlewares.qbittorrent-strip-slash.redirectregex.replacement=$$1/
       - traefik.http.middlewares.qbittorrent-strip-slash.redirectregex.permanent=false
+      - homepage.name=qBittorrent
+      - homepage.href=/qbittorrent
+      - homepage.description=Get
+      - homepage.group=Download
   jellyfin:
     image: lscr.io/linuxserver/jellyfin
     container_name: jellyfin
@@ -94,9 +98,6 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [ gpu ]
-    # devices:
-    #   - /dev/dri/renderD128:/dev/dri/renderD128
-    #   - /dev/dri/card0:/dev/dri/card0
     restart: always
     healthcheck:
       test:
@@ -114,3 +115,29 @@ services:
       - traefik.http.services.jellyfin.loadbalancer.server.port=8096
       - traefik.http.routers.jellyfin.middlewares=jellyfin-stripprefix
       - traefik.http.middlewares.jellyfin-stripprefix.stripPrefix.prefixes=/jellyfin
+      - homepage.name=Jellyfin
+      - homepage.href=/jellyfin/web/index.html
+      - homepage.description=Watch
+      - homepage.group=Media
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    environment:
+      - HOMEPAGE_VAR_TITLE=nebula
+    volumes:
+      - ./homepage:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # - ${DATA_ROOT}:/data
+    restart: always
+    ports:
+      - 3000:3000
+    command:
+      [
+        sh,
+        -c,
+        "cp -n /app/config/tpl/*.yaml /app/config && node server.js"
+      ]
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.homepage.rule=(PathPrefix(`/`))
+      - traefik.http.services.homepage.loadbalancer.server.port=3000
