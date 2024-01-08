@@ -141,3 +141,24 @@
         # overwrite annoying default
     - require:
         - file: {{ loc }}/homepage/tpl
+
+/etc/systemd/system/torrent.service:
+  file.managed:
+    - source: salt://tools/torrent/torrent.service
+    - makedirs: True
+    - template: jinja
+    - user: root
+    - group: root
+    - mode: 640
+    - template: jinja
+      working_dir: {{ loc }}
+    # Do this after everything else is setup
+    - order: last
+
+systemd-torrent:
+  service.running:
+    - name: torrent
+    - enable: True
+    - reload: False
+    - watch:
+      - file: /etc/systemd/system/torrent.service
