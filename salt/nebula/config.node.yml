@@ -177,6 +177,16 @@ firewall:
       # TODO: validate group blocks access
       # group: 'vm-manager'
       host: any
+
+    # torrent samba
+    - port: {{ports['torrent_samba']}}
+      proto: any
+      # TODO: consider narrowing to specific allowed groups
+      # NOTE: 'host: any' is NOT a good idea when you want to limit
+      # with groups host/groups is an OR relationship.
+      # TODO: validate group blocks access
+      # group: 'vm-manager'
+      host: any
 {% endif %}
 
     # Any node can contact us on this port, so any server can run the

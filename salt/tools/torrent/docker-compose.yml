@@ -119,6 +119,31 @@ services:
       - homepage.href=/jellyfin/web/index.html
       - homepage.description=Watch
       - homepage.group=Media
+  # Honestly, I just wanna watch most stuff locally in media player classic,
+  # jellyfin is good if I'm out and about but having samba is pretty slick.
+  # https://old.reddit.com/r/selfhosted/comments/t2x1fy/samba_server_docker_or_native/k6al3a3/
+  #
+  # # NOTE: samba address from other machines is '\\${NEBULA_IP}\media'
+  # DO NOT include the port!!
+  samba:
+    image: ghcr.io/servercontainers/samba:smbd-wsdd2-a3.19.1-s4.18.9-r0@sha256:3edbe45e27befa900e4dec7fc17298dd5a186eb269ffb3dce716c093a52bef45
+    container_name: samba
+    hostname: media-samba
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+    environment:
+      # Arbitrary account, doesn't really matter since nebula is the auth.
+      ACCOUNT_viewer: "viewer_password_1000"
+      UID_username: 1234
+      # Increase to 100 to get full debug logs
+      SAMBA_CONF_LOG_LEVEL: 1
+      SAMBA_VOLUME_CONFIG_media: "[media]; path=/shares/location; available = yes; browsable = yes; writable = no; read only = yes; force user = viewer; public = yes; guest ok = yes"
+    volumes:
+      # samba not allowed to write, only read.
+      - ${DOWNLOAD_ROOT}:/shares/location:ro
+    ports:
+      - "{{ nebula_ip }}:{{ ports['torrent_samba'] }}:445"
   homepage:
     image: ghcr.io/gethomepage/homepage:latest
     container_name: homepage
