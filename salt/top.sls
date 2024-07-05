@@ -51,6 +51,7 @@ base:
     - match: grain
     - common
     - tools/torrent/torrent
+    - tools/bass_transcode/bass_transcode
 
   'roles:vm-host':
     - match: grain

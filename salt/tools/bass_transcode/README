@@ -1,0 +1,15 @@
+Usage:
+
+# Getting content
+
+`./download.sh $URL $URL $URL`
+
+# Converting content:
+
+`./list.sh` - generate list of content to transcode
+
+`./encode_audio.sh` - output audio-only encodes to audio_output
+
+`./encode_video.sh` - output audio-only encodes to video_output
+
+`./sync.sh` - copy encoded audio/video over to torrent-compose samba share directory
