@@ -4,6 +4,12 @@ Usage:
 
 `./download.sh $URL $URL $URL`
 
+# Local backup
+
+Full duplicate current directory to neighboring directory with timestamped name.
+
+`./backup`
+
 # Converting content:
 
 `./list.sh` - generate list of content to transcode

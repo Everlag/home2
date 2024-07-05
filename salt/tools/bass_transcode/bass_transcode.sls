@@ -68,3 +68,11 @@
     - group: root
     - mode: 755
     - makedirs: True
+
+{{ loc }}/backup.sh:
+  file.managed:
+    - source: salt://tools/bass_transcode/backup.sh
+    - user: root
+    - group: root
+    - mode: 755
+    - makedirs: True
