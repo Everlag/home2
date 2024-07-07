@@ -52,6 +52,7 @@ base:
     - common
     - tools/torrent/torrent
     - tools/bass_transcode/bass_transcode
+    - tools/syncthing/syncthing
 
   'roles:vm-host':
     - match: grain

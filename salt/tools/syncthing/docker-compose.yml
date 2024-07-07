@@ -1,0 +1,17 @@
+# comment to keep editor from exploding in rage, jinja still applies...
+# {% from "maps/ports.jinja" import ports with context %}
+
+version: '3'
+
+services:
+  syncthing:
+    image: lscr.io/linuxserver/syncthing:latest
+    container_name: syncthing
+    hostname: syncthing #optional
+    ports:
+      - "{{ nebula_ip }}:{{ ports['syncthing_ui'] }}:8384"
+      - "{{ nebula_ip }}:{{ ports['syncthing_discovery_tcp_udp_22000'] }}:22000/tcp"
+      - "{{ nebula_ip }}:{{ ports['syncthing_discovery_tcp_udp_22000'] }}:22000/udp"
+      - "{{ nebula_ip }}:{{ ports['syncthing_discovery_discovery_udp_21027'] }}:21027/udp"
+    volumes:
+      - ${SYNC_ROOT}:/shares/location

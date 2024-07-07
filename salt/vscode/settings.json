@@ -20,7 +20,7 @@
     // },
     "security.workspace.trust.untrustedFiles": "open",
     "rust-analyzer.server.extraEnv": {
-        "RUSTFLAGS": "-C link-arg=-fuse-ld=lld",
+        "RUSTFLAGS": "-C link-arg=-fuse-ld=lld"
     },
     "explorer.confirmDelete": false,
     "explorer.confirmDragAndDrop": false,

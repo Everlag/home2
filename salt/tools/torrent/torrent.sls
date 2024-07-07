@@ -26,6 +26,7 @@
     - context:
       nebula_ip: {{ nebula_info['ip'].split('/')[0] }}
 
+{# Automatically used variables for rendering docker-compose.yml #}
 {{ loc }}/.env:
   file.managed:
     - source: salt://tools/torrent/env
