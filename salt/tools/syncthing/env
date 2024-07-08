@@ -4,3 +4,4 @@ GROUP_ID=1000
 HOSTNAME=localhost
 TIMEZONE="American/New_York"
 SYNC_ROOT="{{ sync_loc }}"
+DISCOVERY_ROOT="{{ discovery_loc }}"

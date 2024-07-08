@@ -15,3 +15,15 @@ services:
       - "{{ nebula_ip }}:{{ ports['syncthing_discovery_discovery_udp_21027'] }}:21027/udp"
     volumes:
       - ${SYNC_ROOT}:/shares/location
+{% if 'syncthing_stdiscosrv' in salt['grains.get']('roles') %}
+  # self-hosted discovery server over nebula
+  syncthing_stdiscosrv:
+    build:
+      dockerfile: Dockerfile.stdiscosrv
+    container_name: stdiscosrv
+    hostname: syncthing #optional
+    ports:
+      - "{{ nebula_ip }}:{{ ports['syncthing_discosrv'] }}:8443"
+    volumes:
+      - ${DISCOVERY_ROOT}:/app
+{% endif %}

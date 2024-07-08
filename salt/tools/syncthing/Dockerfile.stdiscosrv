@@ -1,0 +1,16 @@
+FROM golang:latest as builder
+
+RUN git clone https://github.com/syncthing/syncthing
+
+RUN cd syncthing/cmd/stdiscosrv && \
+    go build -o /bin/stdiscosrv
+
+FROM debian:bookworm-slim 
+
+RUN mkdir /app
+
+COPY --from=builder /bin/stdiscosrv /bin/stdiscosrv
+
+CMD [ "/bin/stdiscosrv" ]
+
+WORKDIR /app
