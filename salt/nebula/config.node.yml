@@ -203,3 +203,6 @@ firewall:
     - port: {{ports['sillytavern']}}
       proto: any
       host: any
+    - port: {{ports['comfyui']}}
+      proto: any
+      host: any

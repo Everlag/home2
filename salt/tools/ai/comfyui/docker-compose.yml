@@ -1,0 +1,52 @@
+# comment to keep editor from exploding in rage, jinja still applies...
+# {% from "maps/ports.jinja" import ports with context %}
+
+# We use nginx as the access point; this ensures that nothing else
+# is allowed general network access. 
+
+version: "3"
+services:
+  comfyui:
+    build:
+      context: .
+      dockerfile: Dockerfile.comfyui
+    image: comfyui:local # local tag
+    container_name: comfyui
+    volumes:
+      - "./models:/comfyui/models/checkpoints/"
+    logging: *logconfig
+    restart: unless-stopped
+    networks:
+      internal-only:
+    ulimits:
+      memlock: -1
+    mem_limit: 50gb
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]
+  nginx-ingress:
+    image: nginx:mainline-alpine
+    container_name: nginx-ingress
+    volumes:
+      - "./nginx.conf:/etc/nginx/nginx.conf"
+    logging: *logconfig
+    depends_on:
+      - comfyui
+    ports:
+      - "{{ nebula_ip }}:{{ ports['comfyui'] }}:2381"
+    networks:
+      internal-only:
+      gateway-to-external:
+
+        # TODO: limit num cpus for comfyui
+
+networks:
+  comfyui-internal-only:
+    name: internal-only
+    internal: true
+  comfyui-gateway-to-external:
+    name: gateway-to-external
