@@ -39,7 +39,7 @@ services:
         "--listen",
         "0.0.0.0",
         "--port",
-        "2381"
+        "6002"
       ]
   comfyui-nginx-ingress:
     image: nginx:mainline-alpine
@@ -50,7 +50,7 @@ services:
     depends_on:
       - comfyui
     ports:
-      - "{{ nebula_ip }}:{{ ports['comfyui'] }}:6001"
+      - "{{ nebula_ip }}:{{ ports['comfyui'] }}:6002"
     networks:
       comfyui-internal-only:
       comfyui-gateway-to-external:
