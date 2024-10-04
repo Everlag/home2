@@ -50,7 +50,7 @@ services:
     depends_on:
       - comfyui
     ports:
-      - "{{ nebula_ip }}:{{ ports['comfyui'] }}:2381"
+      - "{{ nebula_ip }}:{{ ports['comfyui'] }}:6001"
     networks:
       comfyui-internal-only:
       comfyui-gateway-to-external:
