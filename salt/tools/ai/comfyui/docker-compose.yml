@@ -32,9 +32,18 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [ gpu ]
-  nginx-ingress:
+    command:
+      [
+        "python3",
+        "main.py",
+        "--listen",
+        "0.0.0.0",
+        "--port",
+        "2381"
+      ]
+  comfyui-nginx-ingress:
     image: nginx:mainline-alpine
-    container_name: nginx-ingress
+    container_name: comfyui-nginx-ingress
     volumes:
       - "./nginx.conf:/etc/nginx/nginx.conf"
     logging: *logconfig
