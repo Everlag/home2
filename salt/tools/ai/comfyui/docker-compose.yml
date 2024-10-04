@@ -14,6 +14,7 @@ services:
     container_name: comfyui
     volumes:
       - "./models:/comfyui/models/checkpoints/"
+      - "./output:/comfyui/output/"
     logging: &logconfig
       driver: "local"
       options:

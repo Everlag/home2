@@ -1,5 +1,6 @@
 {% set comfy_loc = "/etc/ai-comfyui" %}
 {% set comfy_models = comfy_loc + "/models" %}
+{% set comfy_output = comfy_loc + "/output" %}
 
 {% from "maps/nebula.jinja" import nebula_hosts, nebula_certpack_password with context %}
 {% from "maps/ai-stack.jinja" import base_cuda_image with context %}
@@ -20,6 +21,14 @@
 {{ comfy_models }}:
   file.directory:
     - name: {{ comfy_models }}
+    - user: {{ user }}
+    - group: {{ user }}
+    - mode: 755
+    - makedirs: True
+
+{{ comfy_output }}:
+  file.directory:
+    - name: {{ comfy_output }}
     - user: {{ user }}
     - group: {{ user }}
     - mode: 755
@@ -60,5 +69,6 @@
     - require:
       - file: {{ comfy_loc }}
       - file: {{ comfy_models }}
+      - file: {{ comfy_output }}
       - file: {{ comfy_loc }}/Dockerfile.comfyui
       - file: {{ comfy_loc }}/nginx.conf
