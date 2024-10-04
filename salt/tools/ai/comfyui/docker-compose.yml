@@ -14,7 +14,11 @@ services:
     container_name: comfyui
     volumes:
       - "./models:/comfyui/models/checkpoints/"
-    logging: *logconfig
+    logging: &logconfig
+      driver: "local"
+      options:
+        max-size: 10m
+        max-file: "3"
     restart: unless-stopped
     networks:
       internal-only:
