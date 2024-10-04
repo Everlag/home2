@@ -38,7 +38,7 @@
 
 {{ comfy_loc }}/nginx.conf:
   file.managed:
-    - source: salt://tools/ai/comfyui/Dockerfile.comfyui
+    - source: salt://tools/ai/comfyui/nginx.conf
     - user: root
     - group: root
     - mode: 644
