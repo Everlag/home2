@@ -50,7 +50,7 @@ services:
 
 networks:
   comfyui-internal-only:
-    name: internal-only
+    name: comfyui-internal-only
     internal: true
   comfyui-gateway-to-external:
-    name: gateway-to-external
+    name: comfyui-gateway-to-external
