@@ -21,7 +21,7 @@ services:
         max-file: "3"
     restart: unless-stopped
     networks:
-      internal-only:
+      comfyui-internal-only:
     ulimits:
       memlock: -1
     mem_limit: 50gb
@@ -43,8 +43,8 @@ services:
     ports:
       - "{{ nebula_ip }}:{{ ports['comfyui'] }}:2381"
     networks:
-      internal-only:
-      gateway-to-external:
+      comfyui-internal-only:
+      comfyui-gateway-to-external:
 
         # TODO: limit num cpus for comfyui
 
