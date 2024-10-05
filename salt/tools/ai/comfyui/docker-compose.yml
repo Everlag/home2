@@ -13,7 +13,7 @@ services:
     image: comfyui:local # local tag
     container_name: comfyui
     volumes:
-      - "./models:/comfyui/models/checkpoints/"
+      - "./models:/comfyui/models/"
       - "./output:/comfyui/output/"
     logging: &logconfig
       driver: "local"
