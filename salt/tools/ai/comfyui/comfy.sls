@@ -1,6 +1,6 @@
 {% set comfy_loc = "/etc/ai-comfyui" %}
 {% set comfy_models = comfy_loc + "/models" %}
-{% set comfy_inputs = comfy_loc + "/inputs" %}
+{% set comfy_input = comfy_loc + "/inputs" %}
 {% set comfy_output = comfy_loc + "/output" %}
 
 {% from "maps/nebula.jinja" import nebula_hosts, nebula_certpack_password with context %}
@@ -27,9 +27,9 @@
     - mode: 755
     - makedirs: True
 
-{{ comfy_inputs }}:
+{{ comfy_input }}:
   file.directory:
-    - name: {{ comfy_inputs }}
+    - name: {{ comfy_input }}
     - user: {{ user }}
     - group: {{ user }}
     - mode: 755

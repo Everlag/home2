@@ -14,7 +14,7 @@ services:
     container_name: comfyui
     volumes:
       - "./models:/comfyui/models/"
-      - "./inputs:/comfyui/inputs/"
+      - "./input:/comfyui/input/"
       - "./output:/comfyui/output/"
     logging: &logconfig
       driver: "local"
