@@ -6,9 +6,14 @@ base:
   "initial-setup":
     - baseline
 
-  {# '*':
+  '*':
     - users
-    - comfort/comfort #}
+    - comfort/comfort
+
+  "roles:laptop":
+    - match: grain
+    - tools/dropbox
+    {# - # TODO: flux, dropbox, keepassxc #}
 
   "roles:dev":
     - match: grain
