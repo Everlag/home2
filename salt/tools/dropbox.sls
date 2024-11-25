@@ -6,7 +6,6 @@
 {{ local_file_loc }}:
   cmd.run:
     - name: |
-        mkdir -p {{ nebula_tar_dir }}
         curl -sSL -o {{ local_file_loc }} {{ remote_url }}
     - unless: test -f {{ local_file_loc }} # todo || dropbox
 
@@ -20,7 +19,7 @@ verify_checksum_dropbox_tar:
 
 install_package_sysbox:
   cmd.run:
-    - name: dpkg -i {{ local_file_loc }}
+    - name: apt-get install -f {{ local_file_loc }}
     - unless: dpkg -l | grep dropbox # don't rerun if already present
     - require:
       - cmd: verify_checksum_dropbox_tar

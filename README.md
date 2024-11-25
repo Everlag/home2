@@ -114,3 +114,20 @@ nebula_external_ips:
 salt-call --local --id initial-setup state.apply baseline pillar='{"SALT_ROLES": "nebula-node vm-ui docker ai-enable ai-gpu", "NEBULA_HOSTNAME": "1m1" }'
 salt-call --local state.apply
 ```
+
+## 1m2 - laptop setup
+
+(Specifically excludes nebula)
+
+```bash
+salt-call --local --id initial-setup state.apply baseline pillar='{"SALT_ROLES": "dev browser laptop", "NEBULA_HOSTNAME": "irrelevant" }'
+salt-call --local state.apply
+```
+
+Note that dropbox requires interactive steps to setup
+- DISPLAY='' dropbox start -i
+- DISPLAY='' dropbox start -i
+
+(Yes, run this twice to have it print the url, its a little jank but it works)
+
+DO NOT run it as sudo!

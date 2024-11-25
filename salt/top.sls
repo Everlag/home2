@@ -13,6 +13,7 @@ base:
   "roles:laptop":
     - match: grain
     - tools/dropbox
+    - tools/keepass2
     {# - # TODO: flux, dropbox, keepassxc #}
 
   "roles:dev":
