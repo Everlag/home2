@@ -54,15 +54,20 @@
     - mode: 644
     - makedirs: True
 
+imwheel:
+  pkg:
+    - installed
+
 /home/{{ user }}/load_x_preferences.sh:
+  {# imwheel intended to be executed to fix scrolling in chrome and vscode #}
   file.managed:
     - contents: |
         xrdb /home/{{ user }}/.Xresources
+        imwheel
     - user: {{ user }}
     - group: {{ user }}
     - mode: 744
     - makedirs: True
-
 
 /home/{{ user }}/.fonts/mononoki-Regular.ttf:
   file.managed:
