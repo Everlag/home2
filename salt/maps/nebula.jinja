@@ -7,17 +7,21 @@
 {# Force a failure if value is not present. #}
 {% set nebula_certpack_password = pillar['nebula_certpack_password'] %}
 
+{#
+TODO: figure out a way to centrally define the groups so they can be used
+in the host config here AND in config.node.yml
+#}
+
 {% set nebula_hosts = ([
-    {
-        "name": "vms",
-        "ip": '192.168.100.1/24',
-        "groups": ["vm-host"],
-        "lighthouse": false,
-    },
     {
         "name": "windows-client",
         "ip": '192.168.100.2/24',
-        "groups": ["vm-host"],
+        "groups": [
+            "vm-host",
+            "torrent_ui", "torrent_samba",
+            "sillytavern", "koboldcpp", "comfyui",
+            "proxmox-webui"
+        ],
         "lighthouse": false,
     },
     {
@@ -29,7 +33,12 @@
     {
         "name": "phone-client",
         "ip": '192.168.100.4/24',
-        "groups": [],
+        "groups": [
+            "vm-host",
+            "torrent_ui", "torrent_samba",
+            "sillytavern", "koboldcpp", "comfyui",
+            "proxmox-webui"
+        ],
         "lighthouse": false,
     },
     {
