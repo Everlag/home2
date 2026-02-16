@@ -60,11 +60,11 @@ include:
     - mode: 700
     - template: jinja
     - context:
-        restic_repos_file: {{ restic_repos_file }}
-        restic_bucket: {{ restic_bucket }}
-        google_project_id: {{ salt['pillar.get']('restic:google_project_id', '') }}
-        google_application_credentials: {{ restic_gcp_creds_file }}
-        restic_password: {{ salt['pillar.get']('restic:password', '') }}
+        restic_repos_file: "{{ restic_repos_file }}"
+        restic_bucket: "{{ restic_bucket }}"
+        google_project_id: "{{ salt['pillar.get']('restic:google_project_id', '') }}"
+        google_application_credentials: "{{ restic_gcp_creds_file }}"
+        restic_password: "{{ salt['pillar.get']('restic:password', '') }}"
     - require:
       - file: {{ restic_repos_file }}
       - file: {{ restic_gcp_creds_file }}
