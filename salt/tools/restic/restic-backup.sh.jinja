@@ -1,0 +1,70 @@
+#!/bin/bash
+# Restic backup script - automatically backs up all repos listed in {{ restic_repos_file }}
+# Deployed by SaltStack - do not edit directly
+
+set -euo pipefail
+
+# Configuration injected from Salt context
+export GOOGLE_PROJECT_ID="{{ google_project_id }}"
+export GOOGLE_APPLICATION_CREDENTIALS="{{ google_application_credentials }}"
+export RESTIC_PASSWORD="{{ restic_password }}"
+
+REPOS_FILE="{{ restic_repos_file }}"
+BUCKET="{{ restic_bucket }}"
+ERROR_COUNT=0
+
+# Function to log messages (goes to journald via systemd)
+log() {
+    echo "[$(date +'%Y-%m-%d %H:%M:%S')] $*"
+}
+# Check if repos file exists
+if [ ! -f "$REPOS_FILE" ]; then
+    log "ERROR: Repos file $REPOS_FILE not found"
+    exit 1
+fi
+# Check if credentials are set
+if [ -z "$GOOGLE_PROJECT_ID" ] || [ -z "$GOOGLE_APPLICATION_CREDENTIALS" ]; then
+    log "ERROR: Google Cloud credentials not set in pillar"
+    exit 1
+fi
+
+if [ -z "$RESTIC_PASSWORD" ]; then
+    log "ERROR: RESTIC_PASSWORD not set in pillar"
+    exit 1
+fi
+log "Starting restic backup run"
+log "Using bucket: $BUCKET"
+# Read repos file and backup each repo
+while IFS= read -r repo || [ -n "$repo" ]; do
+    # Skip empty lines and comments
+    [[ -z "$repo" || "$repo" =~ ^[[:space:]]*# ]] && continue
+    
+    log "Processing repository: $repo"
+    
+    if [ ! -d "$repo" ]; then
+        log "WARNING: Repository path does not exist: $repo - skipping"
+        ((ERROR_COUNT++))
+        continue
+    fi
+    
+    # Extract last path component as repo identifier
+    repo_name=$(basename "$repo")
+    
+    # Run restic backup
+    if restic -r "$BUCKET/$repo_name" backup "$repo" 2>&1; then
+        log "SUCCESS: Backed up $repo to $BUCKET/$repo_name"
+    else
+        log "ERROR: Failed to backup $repo (exit code: $?)"
+        ((ERROR_COUNT++))
+    fi
+    
+done < "$REPOS_FILE"
+
+# Summary
+log "Backup run completed with $ERROR_COUNT errors"
+
+if [ $ERROR_COUNT -gt 0 ]; then
+    exit 1
+fi
+
+exit 0

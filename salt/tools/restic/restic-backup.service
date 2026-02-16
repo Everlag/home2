@@ -1,0 +1,20 @@
+[Unit]
+Description=Restic backup service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart={{ restic_backup_script }}
+User=root
+Group=root
+
+# Security hardening
+PrivateTmp=true
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths={{ restic_config_dir }}
+
+[Install]
+WantedBy=multi-user.target

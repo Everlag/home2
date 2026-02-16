@@ -58,6 +58,7 @@ base:
     - common
     - tools/torrent/torrent
     - tools/bass_transcode/bass_transcode
+    - tools/restic/restic_bin.sls
 
   'roles:vm-host':
     - match: grain

@@ -1,0 +1,11 @@
+[Unit]
+Description=Weekly restic backup timer
+Requires=restic-backup.service
+
+[Timer]
+# Run every Sunday at 1 PM
+OnCalendar=Sun *-*-* 13:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
