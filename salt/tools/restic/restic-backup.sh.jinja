@@ -20,22 +20,50 @@ log() {
     echo "[$(date +'%Y-%m-%d %H:%M:%S')] $*"
 }
 
-# Function to send Discord notifications
+# Function to send Discord notifications (DEFENSIVE - will never fail the script)
 notify_discord() {
+    set +e  # Disable exit on error for this function
+    
     local message="$1"
-
-    if ! curl -X POST -H "Content-Type: application/json" \
-         -d "{\"content\": \"$message\"}" "$DISCORD_WEBHOOK" \
-         --silent --show-error --max-time 10 >/dev/null 2>&1; then
-        log "WARNING: Failed to send Discord notification (backup continues)"
+    log "DEBUG: Attempting to send Discord notification"
+    
+    # Don't fail if webhook isn't set
+    if [ -z "$DISCORD_WEBHOOK" ]; then
+        log "WARNING: Discord webhook URL not configured"
+        set -e  # Re-enable exit on error
+        return 0
     fi
+    
+    # Escape message for JSON (replace " with \")
+    local escaped_message="${message//\"/\\\"}"
+    
+    # Try to send notification
+    curl -X POST -H "Content-Type: application/json" \
+         -d "{\"content\": \"$escaped_message\"}" "$DISCORD_WEBHOOK" \
+         --silent --show-error --max-time 10 >/dev/null 2>&1
+    
+    local curl_exit=$?
+    if [ $curl_exit -ne 0 ]; then
+        log "WARNING: Failed to send Discord notification (exit code: $curl_exit, backup continues)"
+    else
+        log "DEBUG: Discord notification sent successfully"
+    fi
+    
+    set -e  # Re-enable exit on error
+    return 0  # Always succeed
 }
+log "DEBUG: Script initialization complete"
+
 # Check if repos file exists
+log "DEBUG: Checking if repos file exists: $REPOS_FILE"
 if [ ! -f "$REPOS_FILE" ]; then
     log "ERROR: Repos file $REPOS_FILE not found"
     exit 1
 fi
+log "DEBUG: Repos file found"
+
 # Check if credentials are set
+log "DEBUG: Validating credentials"
 if [ -z "$GOOGLE_PROJECT_ID" ] || [ -z "$GOOGLE_APPLICATION_CREDENTIALS" ]; then
     log "ERROR: Google Cloud credentials not set in pillar"
     exit 1
@@ -45,23 +73,30 @@ if [ -z "$RESTIC_PASSWORD" ]; then
     log "ERROR: RESTIC_PASSWORD not set in pillar"
     exit 1
 fi
+log "DEBUG: Credentials validated"
 
 log "Starting restic backup run"
 log "Using bucket: $BUCKET"
-notify_discord ":arrows_counterclockwise: **Restic Backup Started** on \`$HOSTNAME\`"
+log "DEBUG: About to send start notification"
+notify_discord ":arrows_counterclockwise: **Restic Backup Started** on \`$HOSTNAME\`" || true
+log "DEBUG: Start notification call completed"
 
 # Track stats
+log "DEBUG: Initializing tracking variables"
 TOTAL_REPOS=0
 SUCCESS_COUNT=0
 START_TIME=$(date +%s)
 REPO_STATUS=""
+log "DEBUG: Tracking variables initialized"
 
 # Read repos file and backup each repo
+log "DEBUG: Starting to read repos from $REPOS_FILE"
 while IFS= read -r repo || [ -n "$repo" ]; do
     # Skip empty lines and comments
     [[ -z "$repo" || "$repo" =~ ^[[:space:]]*# ]] && continue
     
     ((TOTAL_REPOS++))
+    log "DEBUG: Found repo #$TOTAL_REPOS: $repo"
     log "Processing repository: $repo"
     
     if [ ! -d "$repo" ]; then
@@ -73,10 +108,13 @@ while IFS= read -r repo || [ -n "$repo" ]; do
     
     # Extract last path component as repo identifier
     repo_name=$(basename "$repo")
+    log "DEBUG: Repo identifier: $repo_name"
     
     # Run restic backup and capture output
+    log "DEBUG: Starting backup for $repo_name"
     restic_output=$(restic -r "$BUCKET$repo_name" backup "$repo" 2>&1)
     restic_exit=$?
+    log "DEBUG: Restic exit code: $restic_exit"
     
     # Echo output to journald
     echo "$restic_output"
@@ -90,19 +128,25 @@ while IFS= read -r repo || [ -n "$repo" ]; do
         ((ERROR_COUNT++))
         REPO_STATUS="${REPO_STATUS}:x: \`$repo_name\` failed (exit code: $restic_exit)\n"
     fi
+    log "DEBUG: Finished processing $repo_name"
     
 done < "$REPOS_FILE"
+log "DEBUG: Finished reading all repos"
 
 # Calculate duration
+log "DEBUG: Calculating duration"
 END_TIME=$(date +%s)
 DURATION=$((END_TIME - START_TIME))
 DURATION_MIN=$((DURATION / 60))
 DURATION_SEC=$((DURATION % 60))
+log "DEBUG: Duration calculated: ${DURATION_MIN}m ${DURATION_SEC}s"
 
 # Summary
 log "Backup run completed with $ERROR_COUNT errors"
+log "DEBUG: Total repos: $TOTAL_REPOS, Success: $SUCCESS_COUNT, Errors: $ERROR_COUNT"
 
 # Send completion notification
+log "DEBUG: About to send completion notification"
 if [ $ERROR_COUNT -gt 0 ]; then
     notify_discord ":x: **Restic Backup Failed** on \`$HOSTNAME\`
 Repos: $SUCCESS_COUNT/$TOTAL_REPOS succeeded
@@ -110,7 +154,8 @@ Errors: $ERROR_COUNT
 Duration: ${DURATION_MIN}m ${DURATION_SEC}s
 
 **Per-Repo Status:**
-${REPO_STATUS}"
+${REPO_STATUS}" || true
+    log "DEBUG: Failure notification call completed"
     exit 1
 else
     notify_discord ":white_check_mark: **Restic Backup Completed** on \`$HOSTNAME\`
@@ -118,7 +163,9 @@ Repos: $SUCCESS_COUNT/$TOTAL_REPOS
 Duration: ${DURATION_MIN}m ${DURATION_SEC}s
 
 **Per-Repo Status:**
-${REPO_STATUS}"
+${REPO_STATUS}" || true
+    log "DEBUG: Success notification call completed"
 fi
 
+log "DEBUG: Script exiting successfully"
 exit 0
