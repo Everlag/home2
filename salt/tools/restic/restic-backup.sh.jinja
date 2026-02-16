@@ -34,8 +34,10 @@ notify_discord() {
         return 0
     fi
     
-    # Escape message for JSON (replace " with \")
-    local escaped_message="${message//\"/\\\"}"
+    # Escape message for JSON
+    local escaped_message="${message//\"/\\\"}"  # Escape quotes
+    escaped_message="${escaped_message//$'\n'/\\n}"  # Escape newlines for JSON
+    escaped_message="${escaped_message//$'\r'/}"  # Remove carriage returns
     
     # Try to send notification
     curl -X POST -H "Content-Type: application/json" \
@@ -113,7 +115,8 @@ while IFS= read -r repo || [ -n "$repo" ]; do
     if [ ! -d "$repo" ]; then
         log "WARNING: Repository path does not exist: $repo - skipping"
         ((ERROR_COUNT++)) || true
-        REPO_STATUS="${REPO_STATUS}:x: \`$repo\` - path does not exist\n"
+        REPO_STATUS="${REPO_STATUS}:x: \`$repo\` - path does not exist
+"
         continue
     fi
     
@@ -133,11 +136,13 @@ while IFS= read -r repo || [ -n "$repo" ]; do
     if [ $restic_exit -eq 0 ]; then
         ((SUCCESS_COUNT++)) || true
         log "SUCCESS: Backed up $repo to $BUCKET$repo_name"
-        REPO_STATUS="${REPO_STATUS}:white_check_mark: \`$repo_name\` backed up successfully\n"
+        REPO_STATUS="${REPO_STATUS}:white_check_mark: \`$repo_name\` backed up successfully
+"
     else
         log "ERROR: Failed to backup $repo (exit code: $restic_exit)"
         ((ERROR_COUNT++)) || true
-        REPO_STATUS="${REPO_STATUS}:x: \`$repo_name\` failed (exit code: $restic_exit)\n"
+        REPO_STATUS="${REPO_STATUS}:x: \`$repo_name\` failed (exit code: $restic_exit)
+"
     fi
     log "DEBUG: Finished processing $repo_name"
     
