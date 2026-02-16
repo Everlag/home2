@@ -92,8 +92,19 @@ log "DEBUG: Tracking variables initialized"
 # Read repos file and backup each repo
 log "DEBUG: Starting to read repos from $REPOS_FILE"
 while IFS= read -r repo || [ -n "$repo" ]; do
-    # Skip empty lines and comments
-    [[ -z "$repo" || "$repo" =~ ^[[:space:]]*# ]] && continue
+    log "DEBUG: Read line from file: '$repo'"
+    
+    # Skip empty lines
+    if [ -z "$repo" ]; then
+        log "DEBUG: Skipping empty line"
+        continue
+    fi
+    
+    # Skip comments (safer pattern matching)
+    if [[ "$repo" =~ ^[[:space:]]*# ]]; then
+        log "DEBUG: Skipping comment line: $repo"
+        continue
+    fi
     
     ((TOTAL_REPOS++))
     log "DEBUG: Found repo #$TOTAL_REPOS: $repo"
