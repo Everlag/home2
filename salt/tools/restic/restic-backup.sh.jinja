@@ -106,13 +106,13 @@ while IFS= read -r repo || [ -n "$repo" ]; do
         continue
     fi
     
-    ((TOTAL_REPOS++))
+    ((TOTAL_REPOS++)) || true
     log "DEBUG: Found repo #$TOTAL_REPOS: $repo"
     log "Processing repository: $repo"
     
     if [ ! -d "$repo" ]; then
         log "WARNING: Repository path does not exist: $repo - skipping"
-        ((ERROR_COUNT++))
+        ((ERROR_COUNT++)) || true
         REPO_STATUS="${REPO_STATUS}:x: \`$repo\` - path does not exist\n"
         continue
     fi
@@ -131,12 +131,12 @@ while IFS= read -r repo || [ -n "$repo" ]; do
     echo "$restic_output"
     
     if [ $restic_exit -eq 0 ]; then
-        ((SUCCESS_COUNT++))
+        ((SUCCESS_COUNT++)) || true
         log "SUCCESS: Backed up $repo to $BUCKET$repo_name"
         REPO_STATUS="${REPO_STATUS}:white_check_mark: \`$repo_name\` backed up successfully\n"
     else
         log "ERROR: Failed to backup $repo (exit code: $restic_exit)"
-        ((ERROR_COUNT++))
+        ((ERROR_COUNT++)) || true
         REPO_STATUS="${REPO_STATUS}:x: \`$repo_name\` failed (exit code: $restic_exit)\n"
     fi
     log "DEBUG: Finished processing $repo_name"
