@@ -51,8 +51,8 @@ while IFS= read -r repo || [ -n "$repo" ]; do
     repo_name=$(basename "$repo")
     
     # Run restic backup
-    if restic -r "$BUCKET/$repo_name" backup "$repo" 2>&1; then
-        log "SUCCESS: Backed up $repo to $BUCKET/$repo_name"
+    if restic -r "$BUCKET$repo_name" backup "$repo" 2>&1; then
+        log "SUCCESS: Backed up $repo to $BUCKET$repo_name"
     else
         log "ERROR: Failed to backup $repo (exit code: $?)"
         ((ERROR_COUNT++))

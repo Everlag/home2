@@ -11,12 +11,15 @@ include:
 {% if not salt['pillar.get']('restic:password') %}
 {{ salt['test.exception']('restic:password pillar value is required') }}
 {% endif %}
+{% if not salt['pillar.get']('restic:gcs_bucket') %}
+{{ salt['test.exception']('restic:gcs_bucket pillar value is required') }}
+{% endif %}
 
 {% set restic_config_dir = "/etc/restic" %}
 {% set restic_repos_file = restic_config_dir + "/restic-repos" %}
 {% set restic_gcp_creds_file = restic_config_dir + "/gcp-service-account.json" %}
 {% set restic_backup_script = restic_config_dir + "/restic-backup.sh" %}
-{% set restic_bucket = "gs:restic-feb-16-2026-vms" %}
+{% set restic_bucket = "gs:" + salt['pillar.get']('restic:gcs_bucket') + ":" %}
 
 # Create config directory
 {{ restic_config_dir }}:
