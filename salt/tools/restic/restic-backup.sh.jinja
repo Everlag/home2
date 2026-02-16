@@ -11,11 +11,24 @@ export RESTIC_PASSWORD="{{ restic_password }}"
 
 REPOS_FILE="{{ restic_repos_file }}"
 BUCKET="{{ restic_bucket }}"
+DISCORD_WEBHOOK="{{ discord_webhook_url }}"
+HOSTNAME=$(hostname)
 ERROR_COUNT=0
 
 # Function to log messages (goes to journald via systemd)
 log() {
     echo "[$(date +'%Y-%m-%d %H:%M:%S')] $*"
+}
+
+# Function to send Discord notifications
+notify_discord() {
+    local message="$1"
+
+    if ! curl -X POST -H "Content-Type: application/json" \
+         -d "{\"content\": \"$message\"}" "$DISCORD_WEBHOOK" \
+         --silent --show-error --max-time 10 >/dev/null 2>&1; then
+        log "WARNING: Failed to send Discord notification (backup continues)"
+    fi
 }
 # Check if repos file exists
 if [ ! -f "$REPOS_FILE" ]; then
@@ -32,39 +45,80 @@ if [ -z "$RESTIC_PASSWORD" ]; then
     log "ERROR: RESTIC_PASSWORD not set in pillar"
     exit 1
 fi
+
 log "Starting restic backup run"
 log "Using bucket: $BUCKET"
+notify_discord ":arrows_counterclockwise: **Restic Backup Started** on \`$HOSTNAME\`"
+
+# Track stats
+TOTAL_REPOS=0
+SUCCESS_COUNT=0
+START_TIME=$(date +%s)
+REPO_STATUS=""
+
 # Read repos file and backup each repo
 while IFS= read -r repo || [ -n "$repo" ]; do
     # Skip empty lines and comments
     [[ -z "$repo" || "$repo" =~ ^[[:space:]]*# ]] && continue
     
+    ((TOTAL_REPOS++))
     log "Processing repository: $repo"
     
     if [ ! -d "$repo" ]; then
         log "WARNING: Repository path does not exist: $repo - skipping"
         ((ERROR_COUNT++))
+        REPO_STATUS="${REPO_STATUS}:x: \`$repo\` - path does not exist\n"
         continue
     fi
     
     # Extract last path component as repo identifier
     repo_name=$(basename "$repo")
     
-    # Run restic backup
-    if restic -r "$BUCKET$repo_name" backup "$repo" 2>&1; then
+    # Run restic backup and capture output
+    restic_output=$(restic -r "$BUCKET$repo_name" backup "$repo" 2>&1)
+    restic_exit=$?
+    
+    # Echo output to journald
+    echo "$restic_output"
+    
+    if [ $restic_exit -eq 0 ]; then
+        ((SUCCESS_COUNT++))
         log "SUCCESS: Backed up $repo to $BUCKET$repo_name"
+        REPO_STATUS="${REPO_STATUS}:white_check_mark: \`$repo_name\` backed up successfully\n"
     else
-        log "ERROR: Failed to backup $repo (exit code: $?)"
+        log "ERROR: Failed to backup $repo (exit code: $restic_exit)"
         ((ERROR_COUNT++))
+        REPO_STATUS="${REPO_STATUS}:x: \`$repo_name\` failed (exit code: $restic_exit)\n"
     fi
     
 done < "$REPOS_FILE"
 
+# Calculate duration
+END_TIME=$(date +%s)
+DURATION=$((END_TIME - START_TIME))
+DURATION_MIN=$((DURATION / 60))
+DURATION_SEC=$((DURATION % 60))
+
 # Summary
 log "Backup run completed with $ERROR_COUNT errors"
 
+# Send completion notification
 if [ $ERROR_COUNT -gt 0 ]; then
+    notify_discord ":x: **Restic Backup Failed** on \`$HOSTNAME\`
+Repos: $SUCCESS_COUNT/$TOTAL_REPOS succeeded
+Errors: $ERROR_COUNT
+Duration: ${DURATION_MIN}m ${DURATION_SEC}s
+
+**Per-Repo Status:**
+${REPO_STATUS}"
     exit 1
+else
+    notify_discord ":white_check_mark: **Restic Backup Completed** on \`$HOSTNAME\`
+Repos: $SUCCESS_COUNT/$TOTAL_REPOS
+Duration: ${DURATION_MIN}m ${DURATION_SEC}s
+
+**Per-Repo Status:**
+${REPO_STATUS}"
 fi
 
 exit 0

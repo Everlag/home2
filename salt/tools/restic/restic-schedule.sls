@@ -14,6 +14,9 @@ include:
 {% if not salt['pillar.get']('restic:gcs_bucket') %}
 {{ salt['test.exception']('restic:gcs_bucket pillar value is required') }}
 {% endif %}
+{% if not salt['pillar.get']('restic:discord_webhook_url') %}
+{{ salt['test.exception']('restic:discord_webhook_url pillar value is required') }}
+{% endif %}
 
 {% set restic_config_dir = "/etc/restic" %}
 {% set restic_repos_file = restic_config_dir + "/restic-repos" %}
@@ -65,6 +68,7 @@ include:
         google_project_id: "{{ salt['pillar.get']('restic:google_project_id', '') }}"
         google_application_credentials: "{{ restic_gcp_creds_file }}"
         restic_password: "{{ salt['pillar.get']('restic:password', '') }}"
+        discord_webhook_url: "{{ salt['pillar.get']('restic:discord_webhook_url', '') }}"
     - require:
       - file: {{ restic_repos_file }}
       - file: {{ restic_gcp_creds_file }}
