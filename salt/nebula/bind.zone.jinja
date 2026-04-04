@@ -1,0 +1,7 @@
+{% from "maps/nebula.jinja" import nebula_hosts with context %}
+{% set origin = pillar['nebula_external_dns_origin'].rstrip('.') %}
+$TTL 300
+
+{% for host in nebula_hosts if host['external_dns'] %}
+{{ "%-20s"|format(host['name'] ~ '.' ~ origin ~ '.') }} IN A {{ host['ip'].split('/')[0] }} ; cf_tags=cf-proxied:false
+{% endfor %}

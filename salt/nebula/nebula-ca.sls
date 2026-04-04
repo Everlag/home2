@@ -5,6 +5,7 @@
 
 {% set nebula_ca_location = "/etc/nebula-ca" %}
 {% set nebula_keys_location = "/etc/nebula-ca/keys" %}
+{% set nebula_external_zone = nebula_ca_location + "/nebula-external.zone" %}
 
 {% from "maps/nebula.jinja" import nebula_ca, nebula_hosts, nebula_certpack_password with context %}
 
@@ -32,6 +33,16 @@ verify_nebula_ca:
     - group: root
     - mode: 600
     - makedirs: True
+    - require:
+        - cmd: verify_nebula_ca
+
+{{ nebula_external_zone }}:
+  file.managed:
+    - source: salt://nebula/bind.zone.jinja
+    - user: root
+    - group: root
+    - mode: 600
+    - template: jinja
     - require:
         - cmd: verify_nebula_ca
 
