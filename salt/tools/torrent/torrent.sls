@@ -1,6 +1,7 @@
 {% set loc = "/etc/torrent-compose" %}
 {% set mullvad_private_key = pillar['mullvad']['private_key'] %}
 {% set mullvad_addresses = pillar['mullvad']['addresses'] %}
+{% set torrent_lan_ip = salt['pillar.get']('torrent:lan_ip', '') %}
 
 {% from "maps/nebula.jinja" import nebula_hosts, nebula_certpack_password with context %}
 {% set nebula_host = salt['grains.get']('nebula_hostname') %}
@@ -25,6 +26,7 @@
     - template: jinja
     - context:
       nebula_ip: {{ nebula_info['ip'].split('/')[0] }}
+      torrent_lan_ip: {{ torrent_lan_ip }}
 
 {{ loc }}/.env:
   file.managed:

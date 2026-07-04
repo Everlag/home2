@@ -83,13 +83,17 @@ services:
       - PUID=${USER_ID}
       - PGID=${GROUP_ID}
       - TZ=${TIMEZONE}
-      #- JELLYFIN_PublishedServerUrl=${HOSTNAME}/jellyfin
     volumes:
       - ./jellyfin:/config
       - ${DOWNLOAD_ROOT}:/data
+{% if torrent_lan_ip %}
+    # Optional direct LAN access for devices that cannot run Nebula, such as Apple TV.
+    # This intentionally binds only the configured LAN IP, not all host interfaces.
     ports:
-      - "7359:7359/udp"
-      - "1900:1900/udp"
+      - "{{ torrent_lan_ip }}:8096:8096"
+      - "{{ torrent_lan_ip }}:7359:7359/udp"
+      - "{{ torrent_lan_ip }}:1900:1900/udp"
+{% endif %}
     # gpu availability for transcode
     deploy:
       resources:
